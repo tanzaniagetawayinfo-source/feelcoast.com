@@ -1,156 +1,179 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Feel Coast — Coming Soon</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Feel Coast — Coming Soon</title>
 
-  <meta name="description" content="Feel Coast. Coming soon." />
+<meta name="description" content="Curated beach & sunset events. Coming soon." />
 
-  <style>
-    /* RESET */
-    html, body {
-      margin: 0;
-      padding: 0;
-      width: 100%;
-      height: 100%;
-      background: #000;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      overflow: hidden;
-    }
+<style>
+/* =====================
+   RESET
+===================== */
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  background: #000;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  overflow: hidden;
+}
 
-    /* VIDEO BACKGROUND */
-    .video-bg {
-      position: fixed;
-      inset: 0;
-      z-index: 1;
-    }
+/* =====================
+   VIDEO BACKGROUND
+===================== */
+.video-bg {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+}
 
-    .video-bg video {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      filter: contrast(1.15) saturate(0.85) brightness(0.9);
-      animation: videoFlicker 6s infinite;
-    }
+.video-bg video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: contrast(1.15) saturate(0.85) brightness(0.9);
+  animation: videoFlicker 6s infinite;
+}
 
-    /* VIGNETTE */
-    .vignette {
-      position: fixed;
-      inset: 0;
-      z-index: 2;
-      background: radial-gradient(
-        ellipse at center,
-        rgba(0,0,0,0.15) 0%,
-        rgba(0,0,0,0.55) 70%,
-        rgba(0,0,0,0.9) 100%
-      );
-      pointer-events: none;
-    }
+/* =====================
+   EFFECTS
+===================== */
+.vignette {
+  position: fixed;
+  inset: 0;
+  z-index: 2;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(0,0,0,0.15) 0%,
+    rgba(0,0,0,0.6) 70%,
+    rgba(0,0,0,0.9) 100%
+  );
+  pointer-events: none;
+}
 
-    /* GRAIN */
-    .grain {
-      position: fixed;
-      inset: 0;
-      z-index: 3;
-      background: repeating-linear-gradient(
-        0deg,
-        rgba(255,255,255,0.04),
-        rgba(255,255,255,0.04) 1px,
-        transparent 1px,
-        transparent 2px
-      );
-      opacity: 0.25;
-      mix-blend-mode: overlay;
-      animation: grainMove 0.8s steps(2) infinite;
-      pointer-events: none;
-    }
+.grain {
+  position: fixed;
+  inset: 0;
+  z-index: 3;
+  background: repeating-linear-gradient(
+    0deg,
+    rgba(255,255,255,0.04),
+    rgba(255,255,255,0.04) 1px,
+    transparent 1px,
+    transparent 2px
+  );
+  opacity: 0.25;
+  mix-blend-mode: overlay;
+  animation: grainMove 0.8s steps(2) infinite;
+  pointer-events: none;
+}
 
-    /* ======= CENTRO ASSOLUTO REALE ======= */
-    .center {
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      z-index: 4;
+/* =====================
+   CENTER (ASSOLUTO)
+===================== */
+.center {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 4;
+  text-align: center;
+}
 
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      text-align: center;
-    }
+/* =====================
+   TEXT PLACEHOLDER
+===================== */
+.placeholder {
+  font-size: 22px;
+  letter-spacing: 0.45em;
+  color: rgba(255,255,255,0.85);
+  animation: fadeIn 1.4s ease forwards;
+  white-space: nowrap;
+}
 
-    .logo {
-      width: 70vw;
-      max-width: 320px;
-      filter: drop-shadow(0 10px 30px rgba(0,0,0,0.6));
-      animation: fadeUp 1.6s ease forwards;
-    }
+/* =====================
+   LOGO
+===================== */
+.logo {
+  width: 70vw;
+  max-width: 320px;
+  opacity: 0;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  filter: drop-shadow(0 12px 30px rgba(0,0,0,0.6));
+  transition: opacity 1s ease;
+}
 
-    .coming {
-      margin-top: 18px;
-      font-size: 13px;
-      letter-spacing: 0.35em;
-      color: rgba(255,255,255,0.75);
-      animation: textFlicker 4s infinite;
-    }
+/* =====================
+   STATES
+===================== */
+.show-logo .placeholder {
+  opacity: 0;
+  transition: opacity 0.6s ease;
+}
 
-    @media (min-width: 768px) {
-      .logo {
-        max-width: 360px;
-      }
-    }
+.show-logo .logo {
+  opacity: 1;
+}
 
-    /* ANIMATIONS */
-    @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(24px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
+/* =====================
+   ANIMATIONS
+===================== */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
 
-    @keyframes grainMove {
-      0% { transform: translate(0,0); }
-      50% { transform: translate(-1%, 1%); }
-      100% { transform: translate(1%, -1%); }
-    }
+@keyframes grainMove {
+  0% { transform: translate(0,0); }
+  50% { transform: translate(-1%, 1%); }
+  100% { transform: translate(1%, -1%); }
+}
 
-    @keyframes videoFlicker {
-      0%,100% { opacity: 1; }
-      48% { opacity: 0.98; }
-      50% { opacity: 0.94; }
-      52% { opacity: 1; }
-    }
-
-    @keyframes textFlicker {
-      0%,100% { opacity: 1; }
-      92% { opacity: 0.6; }
-      94% { opacity: 1; }
-      96% { opacity: 0.7; }
-    }
-  </style>
+@keyframes videoFlicker {
+  0%,100% { opacity: 1; }
+  50% { opacity: 0.95; }
+}
+</style>
 </head>
 
 <body>
 
-  <!-- VIDEO -->
-  <div class="video-bg">
-    <video autoplay muted loop playsinline>
-      <source src="8456361-hd_1080_1920_30fps.mp4" type="video/mp4">
-    </video>
-  </div>
+<!-- VIDEO -->
+<div class="video-bg">
+  <video autoplay muted loop playsinline preload="metadata"
+    poster="8456361-hd_1080_1920_30fps.mp4#t=0.1">
+    <source src="8456361-hd_1080_1920_30fps.mp4" type="video/mp4">
+  </video>
+</div>
 
-  <!-- EFFECTS -->
-  <div class="vignette"></div>
-  <div class="grain"></div>
+<!-- EFFECTS -->
+<div class="vignette"></div>
+<div class="grain"></div>
 
-  <!-- CENTERED CONTENT -->
-  <div class="center">
-    <img
-      src="c66f4082-3131-4280-b821-ee43448d156a.png"
-      alt="Feel Coast"
-      class="logo"
-    />
-    <div class="coming">COMING SOON</div>
-  </div>
+<!-- CENTER CONTENT -->
+<div class="center" id="center">
+  <div class="placeholder">COMING&nbsp;SOON</div>
+
+  <img
+    src="c66f4082-3131-4280-b821-ee43448d156a.png"
+    alt="Feel Coast"
+    class="logo"
+    loading="lazy"
+    decoding="async"
+  />
+</div>
+
+<script>
+setTimeout(() => {
+  document.getElementById('center').classList.add('show-logo');
+}, 10000); // 10 secondi
+</script>
 
 </body>
 </html>
