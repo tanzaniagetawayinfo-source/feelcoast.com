@@ -127,6 +127,25 @@ html, body {
   50% { transform: translate(-1%, 1%); }
   100% { transform: translate(1%, -1%); }
 }
+
+/* =====================
+   SMALL TOP-RIGHT LOGO (FAST)
+===================== */
+.corner-logo {
+  position: fixed;
+  top: 14px;
+  right: 14px;
+  z-index: 5;
+  width: 64px;           /* piccolo = carica veloce */
+  opacity: 0.55;         /* low-impact visivo */
+  filter: blur(0.3px);   /* maschera qualità */
+  pointer-events: none;  /* non cliccabile */
+}
+
+.corner-logo img {
+  width: 100%;
+  height: auto;
+}
 </style>
 </head>
 
@@ -143,6 +162,11 @@ html, body {
   >
     <source src="8456361-hd_1080_1920_30fps.mp4" type="video/mp4">
   </video>
+</div>
+
+<!-- TOP RIGHT LOGO (LOW IMPACT) -->
+<div class="corner-logo">
+  <img src="c66f4082-3131-4280-b821-ee43448d156a.png" alt="Feel Coast" loading="eager" decoding="async" />
 </div>
 
 <!-- EFFECTS -->
