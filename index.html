@@ -8,32 +8,44 @@
   <meta name="description" content="Feel Coast. Coming soon." />
 
   <style>
+    /* =====================
+       RESET + BASE
+    ====================== */
     html, body {
       margin: 0;
       padding: 0;
       width: 100%;
-      height: 100%;
+      min-height: 100svh;
+      min-height: 100dvh;
       background: #000;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       overflow: hidden;
     }
 
-    /* VIDEO */
+    /* =====================
+       VIDEO BACKGROUND
+    ====================== */
     .video-bg {
       position: fixed;
       inset: 0;
       z-index: 1;
+      overflow: hidden;
     }
 
     .video-bg video {
       width: 100%;
       height: 100%;
       object-fit: cover;
-      filter: contrast(1.15) saturate(0.85) brightness(0.9);
+      filter:
+        contrast(1.15)
+        saturate(0.85)
+        brightness(0.9);
       animation: videoFlicker 6s infinite;
     }
 
-    /* EFFECTS */
+    /* =====================
+       VIGNETTE
+    ====================== */
     .vignette {
       position: fixed;
       inset: 0;
@@ -47,33 +59,49 @@
       pointer-events: none;
     }
 
+    /* =====================
+       GRAIN / SCANLINES
+    ====================== */
     .grain {
       position: fixed;
       inset: 0;
       z-index: 3;
-      background: repeating-linear-gradient(
-        0deg,
-        rgba(255,255,255,0.04),
-        rgba(255,255,255,0.04) 1px,
-        transparent 1px,
-        transparent 2px
-      );
+      background:
+        repeating-linear-gradient(
+          0deg,
+          rgba(255,255,255,0.04),
+          rgba(255,255,255,0.04) 1px,
+          transparent 1px,
+          transparent 2px
+        );
       opacity: 0.25;
       mix-blend-mode: overlay;
       animation: grainMove 0.8s steps(2) infinite;
       pointer-events: none;
     }
 
-    /* CONTENT – FIX MOBILE */
+    /* =====================
+       CONTENT (CENTRO REALE)
+    ====================== */
     .content {
       position: relative;
       z-index: 4;
-      min-height: 100dvh; /* 🔥 QUESTO È IL FIX */
+
+      width: 100%;
+      min-height: 100svh;
+      min-height: 100dvh;
+
       display: flex;
       align-items: center;
       justify-content: center;
+
       text-align: center;
-      padding: 24px;
+
+      /* safe-area mobile (notch / barra) */
+      padding:
+        calc(24px + env(safe-area-inset-top))
+        24px
+        calc(24px + env(safe-area-inset-bottom));
     }
 
     .center-block {
@@ -81,14 +109,16 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      transform: translateY(-4%); /* micro compensazione ottica */
     }
 
+    /* =====================
+       LOGO + TEXT
+    ====================== */
     .logo {
       width: 70%;
-      max-width: 300px;
+      max-width: 320px;
       filter: drop-shadow(0 10px 30px rgba(0,0,0,0.6));
-      animation: fadeUp 1.8s ease forwards;
+      animation: fadeUp 1.6s ease forwards;
     }
 
     .coming {
@@ -99,9 +129,24 @@
       animation: textFlicker 4s infinite;
     }
 
+    @media (min-width: 768px) {
+      .logo {
+        max-width: 360px;
+      }
+    }
+
+    /* =====================
+       ANIMATIONS
+    ====================== */
     @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(24px); }
-      to { opacity: 1; transform: translateY(0); }
+      from {
+        opacity: 0;
+        transform: translateY(24px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
 
     @keyframes grainMove {
@@ -111,35 +156,42 @@
     }
 
     @keyframes videoFlicker {
-      0%,100% { opacity: 1; }
-      50% { opacity: 0.95; }
+      0%, 100% { opacity: 1; }
+      48% { opacity: 0.98; }
+      50% { opacity: 0.94; }
+      52% { opacity: 1; }
     }
 
     @keyframes textFlicker {
-      0%,100% { opacity: 1; }
-      95% { opacity: 0.7; }
-    }
-
-    @media (min-width: 768px) {
-      .logo { max-width: 360px; }
-      .center-block { transform: none; }
+      0%, 100% { opacity: 1; }
+      92% { opacity: 0.6; }
+      94% { opacity: 1; }
+      96% { opacity: 0.7; }
     }
   </style>
 </head>
+
 <body>
 
+  <!-- VIDEO -->
   <div class="video-bg">
     <video autoplay muted loop playsinline>
-      <source src="8456361-hd_1080_1920_30fps.mp4" type="video/mp4" />
+      <source src="8456361-hd_1080_1920_30fps.mp4" type="video/mp4">
     </video>
   </div>
 
+  <!-- EFFECTS -->
   <div class="vignette"></div>
   <div class="grain"></div>
 
+  <!-- CONTENT -->
   <div class="content">
     <div class="center-block">
-      <img src="c66f4082-3131-4280-b821-ee43448d156a.png" class="logo" alt="Feel Coast">
+      <img
+        src="c66f4082-3131-4280-b821-ee43448d156a.png"
+        alt="Feel Coast"
+        class="logo"
+      />
       <div class="coming">COMING SOON</div>
     </div>
   </div>
