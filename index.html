@@ -224,17 +224,27 @@ html, body {
 <script>
 const video = document.getElementById('video');
 const center = document.getElementById('center');
+const loader = document.getElementById('loader');
 const LOGO_TIME = 10; // secondi
 
-video.play();
+let loaderHidden = false;
 
-// nascondi loader quando il video è pronto
-video.addEventListener('canplay', () => {
-  const loader = document.getElementById('loader');
+function hideLoader() {
+  if (loaderHidden) return;
+  loaderHidden = true;
   loader.classList.add('hidden');
-});();
+}
 
-/* controllo continuo sul tempo del video */
+// Avvia il video (autoplay mobile-safe: muted + playsinline)
+video.play().catch(() => {});
+
+// Nascondi loader quando il video è pronto
+video.addEventListener('canplay', hideLoader);
+
+// Fallback di sicurezza: mai loader infinito (2.5s)
+setTimeout(hideLoader, 2500);
+
+// Mostra logo dopo 10s, altrimenti testo
 video.addEventListener('timeupdate', () => {
   if (video.currentTime >= LOGO_TIME) {
     center.classList.add('show-logo');
@@ -243,13 +253,13 @@ video.addEventListener('timeupdate', () => {
   }
 });
 
-/* loop manuale */
+// Loop manuale pulito
 video.addEventListener('ended', () => {
   center.classList.remove('show-logo');
   video.currentTime = 0;
-  video.play();
+  video.play().catch(() => {});
 });
-</script>
+</s
 
 </body>
 </html>
