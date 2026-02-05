@@ -146,10 +146,45 @@ html, body {
   width: 100%;
   height: auto;
 }
+/* =====================
+   LOADER
+===================== */
+.loader {
+  position: fixed;
+  inset: 0;
+  z-index: 10;
+  background: #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.8s ease;
+}
+
+.loader.hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.loader-text {
+  font-size: 18px;
+  letter-spacing: 0.45em;
+  color: rgba(255,255,255,0.8);
+  animation: loaderPulse 1.6s ease-in-out infinite;
+}
+
+@keyframes loaderPulse {
+  0%,100% { opacity: 0.4; }
+  50% { opacity: 1; }
+}
 </style>
 </head>
 
 <body>
+
+<!-- LOADER -->
+<div class="loader" id="loader">
+  <div class="loader-text">LOADING</div>
+</div>
 
 <!-- VIDEO -->
 <div class="video-bg">
@@ -192,6 +227,12 @@ const center = document.getElementById('center');
 const LOGO_TIME = 10; // secondi
 
 video.play();
+
+// nascondi loader quando il video è pronto
+video.addEventListener('canplay', () => {
+  const loader = document.getElementById('loader');
+  loader.classList.add('hidden');
+});();
 
 /* controllo continuo sul tempo del video */
 video.addEventListener('timeupdate', () => {
