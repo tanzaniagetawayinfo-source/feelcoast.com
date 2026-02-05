@@ -146,6 +146,25 @@ html, body {
   width: 100%;
   height: auto;
 }
+
+/* =====================
+   TOP-RIGHT MENU ICON
+===================== */
+.corner-menu {
+  position: fixed;
+  top: 16px;
+  right: 16px;           /* DESTRA */
+  z-index: 5;
+  width: 28px;           /* discreto, rapido */
+  opacity: 0.75;
+  filter: blur(0.1px);
+  pointer-events: none;  /* per ora solo visivo */
+}
+
+.corner-menu img {
+  width: 100%;
+  height: auto;
+}
 /* =====================
    LOADER
 ===================== */
@@ -202,6 +221,11 @@ html, body {
 <!-- TOP LEFT LOGO (LOW IMPACT) -->
 <div class="corner-logo">
   <img src="c66f4082-3131-4280-b821-ee43448d156a.png" alt="Feel Coast" loading="eager" decoding="async" />
+</div>
+
+<!-- TOP RIGHT MENU ICON -->
+<div class="corner-menu">
+  <img src="menu.png" alt="Menu" loading="eager" decoding="async" />
 </div>
 
 <!-- EFFECTS -->
