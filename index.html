@@ -197,7 +197,7 @@ html, body {
 }
 
 /* =====================
-   SPONSORS MARQUEE (BOTTOM, INFINITE)
+   SPONSORS STRIP (BOTTOM, MANUAL SCROLL)
 ===================== */
 .sponsors {
   position: fixed;
@@ -205,55 +205,31 @@ html, body {
   bottom: 16px;
   width: 100%;
   z-index: 4;
-  overflow: hidden;
-  pointer-events: none;
+  overflow-x: auto;
+  overflow-y: hidden;
+  pointer-events: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
 }
 
-.sponsors::before,
-.sponsors::after {
-  content: "";
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  width: 40px;
-  z-index: 5;
+.sponsors::-webkit-scrollbar {
+  display: none;
 }
 
-.sponsors::before {
-  left: 0;
-  background: linear-gradient(to right, rgba(0,0,0,0.9), rgba(0,0,0,0));
-}
-
-.sponsors::after {
-  right: 0;
-  background: linear-gradient(to left, rgba(0,0,0,0.9), rgba(0,0,0,0));
-}
-
-.sponsors-marquee {
-  display: flex;
-  width: max-content;
-  will-change: transform;
-  animation: sponsorsScroll var(--speed, 30s) linear infinite;
-}
-
-.sponsors-group {
+.sponsors-track {
   display: flex;
   gap: 28px;
   padding: 0 24px;
+  width: max-content;
 }
 
 .sponsor img {
   height: 26px;
   width: auto;
-  opacity: 0.7;
-  filter: grayscale(100%) blur(0.15px);
+  opacity: 0.75;
+  filter: grayscale(100%);
 }
-
-@keyframes sponsorsScroll {
-  from { transform: translateX(0); }
-  to { transform: translateX(calc(-1 * var(--loop-width))); }
-}
-  
+    
 </style>
 </head>
 
@@ -287,9 +263,9 @@ html, body {
   <img src="menu.png" alt="Menu" loading="eager" decoding="async" />
 </div>
 
-<!-- SPONSORS MARQUEE (INFINITE) -->
+<!-- SPONSORS STRIP (MANUAL SCROLL) -->
 <div class="sponsors" id="sponsors" style="display:none;">
-  <div class="sponsors-marquee" id="sponsorsMarquee">
+  <div class="sponsors-track" id="sponsorsTrack">
     <div class="sponsors-group" id="sponsorsA"></div>
     <div class="sponsors-group" id="sponsorsB" aria-hidden="true"></div>
   </div>
@@ -365,18 +341,22 @@ video.addEventListener('ended', () => {
 });
 
 /* =====================
-   SPONSORS INIT (solo file esistenti, loop infinito)
+   SPONSORS INIT (manual infinite wrap)
+   - usa solo sponsor*.png esistenti
+   - ripete a ruota se pochi
+   - wrap manuale senza auto-scroll
 ===================== */
 (function initSponsors() {
   const host = document.getElementById('sponsors');
-  const marquee = document.getElementById('sponsorsMarquee');
+  const track = document.getElementById('sponsorsTrack');
   const A = document.getElementById('sponsorsA');
   const B = document.getElementById('sponsorsB');
-  if (!host || !marquee || !A || !B) return;
+  if (!host || !track || !A || !B) return;
 
   const candidates = Array.from({ length: 10 }, (_, i) => `sponsor${i + 1}.png`);
   const loaded = [];
   let checked = 0;
+  let loopWidth = 0;
 
   candidates.forEach(src => {
     const img = new Image();
@@ -396,16 +376,35 @@ video.addEventListener('ended', () => {
 
     const min = 12;
     const list = [];
-    while (list.length < min) list.push(...loaded);
+    while (list.length < min) {
+      for (const s of loaded) {
+        list.push(s);
+        if (list.length >= min) break;
+      }
+    }
 
-    A.innerHTML = list.map((s,i)=>`<div class=\"sponsor\"><img src=\"${s}\" alt=\"Sponsor ${i+1}\" loading=\"lazy\"></div>`).join('');
+    A.innerHTML = list.map((s,i)=>
+      `<div class=\"sponsor\"><img src=\"${s}\" alt=\"Sponsor ${i+1}\" loading=\"lazy\"></div>`
+    ).join('');
+
     B.innerHTML = A.innerHTML;
 
     requestAnimationFrame(() => {
-      const w = A.getBoundingClientRect().width;
-      marquee.style.setProperty('--loop-width', `${w}px`);
-      marquee.style.setProperty('--speed', `${Math.min(40, Math.max(18, w/60))}s`);
+      loopWidth = A.getBoundingClientRect().width;
+      host.scrollLeft = loopWidth;
     });
+
+    let ticking = false;
+    host.addEventListener('scroll', () => {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(() => {
+        ticking = false;
+        if (!loopWidth) return;
+        if (host.scrollLeft >= loopWidth * 2) host.scrollLeft -= loopWidth;
+        if (host.scrollLeft <= 0) host.scrollLeft += loopWidth;
+      });
+    }, { passive: true });
   }
 })();
 </script>
