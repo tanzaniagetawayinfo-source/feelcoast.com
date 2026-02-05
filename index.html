@@ -233,25 +233,29 @@ function hideLoader() {
   if (loaderHidden) return;
   loaderHidden = true;
   loader.classList.add('hidden');
-  // rimozione fisica per sicurezza totale
   setTimeout(() => {
     loader.style.display = 'none';
-  }, 900);
+  }, 800);
 }
 
-// Avvia il video (autoplay mobile-safe: muted + playsinline)
+// Avvio video (mobile-safe)
 video.play().catch(() => {});
 
-// FIX FORZATO: mai loader infinito (DOM pronto)
-document.addEventListener('DOMContentLoaded', () => {
-  setTimeout(hideLoader, 1200);
+/*
+  NASCONDI IL LOADER SOLO QUANDO:
+  - il video ha caricato i dati (loadeddata)
+  - ALMENO un frame è stato effettivamente disegnato
+*/
+video.addEventListener('loadeddata', () => {
+  requestAnimationFrame(() => {
+    requestAnimationFrame(hideLoader);
+  });
 });
 
-// Nascondi loader quando il video è pronto
-video.addEventListener('canplay', hideLoader);
-
-// Fallback di sicurezza: mai loader infinito (2.5s)
-setTimeout(hideLoader, 2500);
+// Sicurezza estrema: se il video è bloccato, mai infinito (4s)
+setTimeout(() => {
+  if (!loaderHidden) hideLoader();
+}, 4000);
 
 // Mostra logo dopo 10s, altrimenti testo
 video.addEventListener('timeupdate', () => {
