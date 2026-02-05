@@ -102,6 +102,7 @@ button {
   margin: -8px 0 18px 0;
   text-align: center;
 }
+
 .back-home {
   position: fixed;
   top: 20px;
@@ -116,16 +117,15 @@ button {
 .back-home:hover {
   color: #fff;
 }
-
 </style>
 </head>
 
 <body>
 <a href="index.html" class="back-home">← HOME</a>
-<div class="container">
-  <form class="form-card" id="contactForm">
-    <h1 id="formTitle">CONTACT</h1>
 
+<div class="container">
+  <form class="form-card" id="contactForm" method="POST" novalidate>
+    <h1 id="formTitle">CONTACT</h1>
     <p class="intro" id="formIntro"></p>
 
     <input type="hidden" name="type" id="typeField" value="" />
@@ -147,39 +147,104 @@ button {
     </div>
 
     <button type="submit">SEND</button>
-
     <div class="note">We will get back to you shortly.</div>
   </form>
 </div>
 
 <script>
-// read type from URL
-const params = new URLSearchParams(window.location.search);
-const type = params.get('type') || 'contact';
+(() => {
+  // ---------- UI copy from URL param ----------
+  const params = new URLSearchParams(window.location.search);
+  const type = (params.get('type') || 'contact').toLowerCase();
 
-const title = document.getElementById('formTitle');
-const intro = document.getElementById('formIntro');
-const locationNote = document.getElementById('locationNote');
-const typeField = document.getElementById('typeField');
+  const title = document.getElementById('formTitle');
+  const intro = document.getElementById('formIntro');
+  const locationNote = document.getElementById('locationNote');
+  const typeField = document.getElementById('typeField');
+  const form = document.getElementById('contactForm');
 
-typeField.value = type;
+  typeField.value = type;
 
-if (type === 'location') {
-  title.textContent = 'PROPOSE A LOCATION';
-  intro.textContent = 'Do you own or manage a venue in Zanzibar and would like to host curated beach or sunset events with Feel Coast? Tell us about your location and your vision.';
-  locationNote.style.display = 'block';
-}
-if (type === 'sponsor') {
-  title.textContent = 'BECOME A SPONSOR';
-  intro.textContent = 'Are you a brand aligned with beach culture, travel, lifestyle or music? Partner with Feel Coast and connect with a curated international audience.';
-}
+  if (type === 'location') {
+    title.textContent = 'PROPOSE A LOCATION';
+    intro.textContent = 'Do you own or manage a venue in Zanzibar and would like to host curated beach or sunset events with Feel Coast? Tell us about your location and your vision.';
+    locationNote.style.display = 'block';
+  } else if (type === 'sponsor') {
+    title.textContent = 'BECOME A SPONSOR';
+    intro.textContent = 'Are you a brand aligned with beach culture, travel, lifestyle or music? Partner with Feel Coast and connect with a curated international audience.';
+  } else {
+    title.textContent = 'CONTACT';
+    intro.textContent = 'Send us a message and we’ll get back to you shortly.';
+  }
 
-// temporary submit handler (no backend yet)
-document.getElementById('contactForm').addEventListener('submit', (e) => {
-  e.preventDefault();
-  alert('Form submitted (demo). Backend will be connected next.');
-  e.target.reset();
-});
+  // ---------- SUBMIT → GITHUB ISSUES (via server-side bridge) ----------
+  // NOTE: GitHub Pages cannot receive POST requests directly.
+  // We will replace ENDPOINT with a real bridge URL (e.g., Cloudflare Worker / Netlify Function / GitHub Action relay).
+  const ENDPOINT = 'https://YOUR_BRIDGE_ENDPOINT/new-issue';
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    // native constraint validation
+    if (!form.reportValidity()) return;
+
+    const payload = {
+      type: typeField.value,
+      business: form.business.value.trim(),
+      name: form.name.value.trim(),
+      email: form.email.value.trim(),
+      message: form.message.value.trim(),
+      page: window.location.href,
+      createdAt: new Date().toISOString()
+    };
+
+    try {
+      const res = await fetch(ENDPOINT, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+
+      if (!res.ok) throw new Error('Network error');
+
+      form.innerHTML = `
+        <h1>THANK YOU</h1>
+        <p class="intro">Your request has been received. We’ll get back to you shortly.</p>
+        <div class="note">Feel Coast</div>
+      `;
+    } catch (err) {
+      alert('Submission failed. Please try again later.');
+    }
+  });
+
+  // ---------- Minimal self-tests (console) ----------
+  // These do not affect UX; they help catch regressions quickly.
+  (function runTests() {
+    const tests = [];
+    const assert = (name, condition) => tests.push({ name, pass: !!condition });
+
+    assert('Form exists', !!form);
+    assert('Type field exists', !!typeField);
+    assert('Type is set', typeField.value === type);
+    assert('Business input exists', !!form.business);
+    assert('Email input exists', !!form.email);
+
+    // Title should not be empty
+    assert('Title populated', (title.textContent || '').trim().length > 0);
+
+    // Location note visibility matches type
+    const noteVisible = locationNote.style.display !== 'none';
+    assert('Location note visible only for location', type === 'location' ? noteVisible : !noteVisible);
+
+    // Report
+    const failed = tests.filter(t => !t.pass);
+    if (failed.length) {
+      console.warn('[FeelCoast][Form] Tests failed:', failed);
+    } else {
+      console.log('[FeelCoast][Form] Tests passed:', tests.length);
+    }
+  })();
+})();
 </script>
 </body>
 </html>
