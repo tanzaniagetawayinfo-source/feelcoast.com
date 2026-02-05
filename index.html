@@ -233,10 +233,19 @@ function hideLoader() {
   if (loaderHidden) return;
   loaderHidden = true;
   loader.classList.add('hidden');
+  // rimozione fisica per sicurezza totale
+  setTimeout(() => {
+    loader.style.display = 'none';
+  }, 900);
 }
 
 // Avvia il video (autoplay mobile-safe: muted + playsinline)
 video.play().catch(() => {});
+
+// FIX FORZATO: mai loader infinito (DOM pronto)
+document.addEventListener('DOMContentLoaded', () => {
+  setTimeout(hideLoader, 1200);
+});
 
 // Nascondi loader quando il video è pronto
 video.addEventListener('canplay', hideLoader);
@@ -259,7 +268,7 @@ video.addEventListener('ended', () => {
   video.currentTime = 0;
   video.play().catch(() => {});
 });
-</s
+</script>
 
 </body>
 </html>
