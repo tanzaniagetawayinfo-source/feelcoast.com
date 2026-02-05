@@ -318,7 +318,6 @@ const menuBtn = document.querySelector('.corner-menu');
 let menuOpen = false;
 
 menuBtn.addEventListener('click', async () => {
-  // evita doppie aperture
   if (menuOpen) return;
 
   try {
@@ -329,7 +328,6 @@ menuBtn.addEventListener('click', async () => {
     // sblocca i click mentre il menu è aperto
     document.body.style.pointerEvents = 'auto';
 
-    // osserva la rimozione del menu per riabilitare aperture successive
     const observer = new MutationObserver(() => {
       if (!document.querySelector('.menu-overlay')) {
         document.body.style.pointerEvents = '';
@@ -342,10 +340,6 @@ menuBtn.addEventListener('click', async () => {
   } catch (e) {
     console.error('Menu load failed', e);
     menuOpen = false;
-  }
-});
-  } catch (e) {
-    console.error('Menu load failed', e);
   }
 });
 
