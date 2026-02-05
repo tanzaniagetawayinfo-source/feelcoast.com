@@ -95,21 +95,55 @@ html, body {
 
 <body>
 
-<div class="menu-overlay" id="menuOverlay" onclick="this.remove()">
+<div class="menu-overlay" id="menuOverlay">
   <div class="menu-panel" onclick="event.stopPropagation()">
-    <div class="menu-close" onclick="this.closest('.menu-overlay').remove()">✕</div>
+    <div class="menu-close" id="menuClose">✕</div>
 
-    <div class="menu-link" onclick="window.location.href='form.html?type=location'">
+    <div class="menu-link" data-type="location">
       PROPOSE YOUR LOCATION
     </div>
 
-    <div class="menu-link" onclick="window.location.href='form.html?type=sponsor'">
+    <div class="menu-link" data-type="sponsor">
       BECOME A SPONSOR
     </div>
   </div>
 </div>
 
+<script>
+(function () {
+  const overlay = document.getElementById('menuOverlay');
+  const panel = overlay.querySelector('.menu-panel');
+  const closeBtn = document.getElementById('menuClose');
 
+  // close when clicking outside panel
+  overlay.addEventListener('click', () => {
+    overlay.dispatchEvent(new CustomEvent('menu:close', { bubbles: true }));
+  });
+
+  panel.addEventListener('click', (e) => e.stopPropagation());
+
+  closeBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    overlay.dispatchEvent(new CustomEvent('menu:close', { bubbles: true }));
+  });
+
+  overlay.addEventListener('menu:close', () => {
+    overlay.style.opacity = '0';
+    setTimeout(() => overlay.remove(), 300);
+  });
+
+  overlay.querySelectorAll('.menu-link').forEach(link => {
+    link.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const type = link.dataset.type;
+      overlay.dispatchEvent(new CustomEvent('menu:close', { bubbles: true }));
+      setTimeout(() => {
+        window.location.href = `form.html?type=${type}`;
+      }, 250);
+    });
+  });
+})();
+</script>
 
 </body>
 </html>
