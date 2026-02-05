@@ -315,20 +315,25 @@ const LOGO_TIME = 10; // secondi
 // MENU LAZY LOAD
 // =====================
 const menuBtn = document.querySelector('.corner-menu');
-let menuLoaded = false;
+let menuOpen = false;
 
 menuBtn.addEventListener('click', async () => {
+  // evita doppie aperture
+  if (menuOpen) return;
+
   try {
     const html = await fetch('menu.html').then(r => r.text());
     document.body.insertAdjacentHTML('beforeend', html);
+    menuOpen = true;
 
-    // SBLOCCA I CLICK QUANDO IL MENU È APERTO
+    // sblocca i click mentre il menu è aperto
     document.body.style.pointerEvents = 'auto';
 
-    // quando il menu viene rimosso, ripristina lo stato
+    // osserva la rimozione del menu per riabilitare aperture successive
     const observer = new MutationObserver(() => {
       if (!document.querySelector('.menu-overlay')) {
         document.body.style.pointerEvents = '';
+        menuOpen = false;
         observer.disconnect();
       }
     });
@@ -336,6 +341,7 @@ menuBtn.addEventListener('click', async () => {
     observer.observe(document.body, { childList: true });
   } catch (e) {
     console.error('Menu load failed', e);
+    menuOpen = false;
   }
 });
   } catch (e) {
