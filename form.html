@@ -87,6 +87,21 @@ button {
   opacity: 0.6;
   text-align: center;
 }
+
+.intro {
+  font-size: 13px;
+  line-height: 1.6;
+  opacity: 0.8;
+  margin: 0 0 28px 0;
+  text-align: center;
+}
+
+.location-note {
+  font-size: 11px;
+  opacity: 0.6;
+  margin: -8px 0 18px 0;
+  text-align: center;
+}
 </style>
 </head>
 
@@ -95,16 +110,25 @@ button {
   <form class="form-card" id="contactForm">
     <h1 id="formTitle">CONTACT</h1>
 
+    <p class="intro" id="formIntro"></p>
+
     <input type="hidden" name="type" id="typeField" value="" />
 
-    <label>Name</label>
+    <label>Business / Brand Name</label>
+    <input type="text" name="business" required />
+
+    <label>Your Name</label>
     <input type="text" name="name" required />
 
-    <label>Email</label>
+    <label>Email Address</label>
     <input type="email" name="email" required />
 
-    <label>Message</label>
-    <textarea name="message" required></textarea>
+    <label>Tell us more</label>
+    <textarea name="message" required placeholder="Share a few details…"></textarea>
+
+    <div class="location-note" id="locationNote" style="display:none;">
+      Locations must be based in Zanzibar (Unguja).
+    </div>
 
     <button type="submit">SEND</button>
 
@@ -118,15 +142,20 @@ const params = new URLSearchParams(window.location.search);
 const type = params.get('type') || 'contact';
 
 const title = document.getElementById('formTitle');
+const intro = document.getElementById('formIntro');
+const locationNote = document.getElementById('locationNote');
 const typeField = document.getElementById('typeField');
 
 typeField.value = type;
 
 if (type === 'location') {
-  title.textContent = 'PROPOSE LOCATION';
+  title.textContent = 'PROPOSE A LOCATION';
+  intro.textContent = 'Do you own or manage a venue in Zanzibar and would like to host curated beach or sunset events with Feel Coast? Tell us about your location and your vision.';
+  locationNote.style.display = 'block';
 }
 if (type === 'sponsor') {
-  title.textContent = 'BECOME SPONSOR';
+  title.textContent = 'BECOME A SPONSOR';
+  intro.textContent = 'Are you a brand aligned with beach culture, travel, lifestyle or music? Partner with Feel Coast and connect with a curated international audience.';
 }
 
 // temporary submit handler (no backend yet)
