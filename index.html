@@ -35,7 +35,6 @@ html, body {
   height: 100%;
   object-fit: cover;
   filter: contrast(1.15) saturate(0.85) brightness(0.9);
-  animation: videoFlicker 6s infinite;
 }
 
 /* =====================
@@ -84,14 +83,14 @@ html, body {
 }
 
 /* =====================
-   TEXT PLACEHOLDER
+   COMING SOON (TESTO)
 ===================== */
 .placeholder {
   font-size: 22px;
   letter-spacing: 0.45em;
   color: rgba(255,255,255,0.85);
-  animation: fadeIn 1.4s ease forwards;
   white-space: nowrap;
+  transition: opacity 0.6s ease;
 }
 
 /* =====================
@@ -106,7 +105,7 @@ html, body {
   left: 50%;
   transform: translate(-50%, -50%);
   filter: drop-shadow(0 12px 30px rgba(0,0,0,0.6));
-  transition: opacity 1s ease;
+  transition: opacity 0.8s ease;
 }
 
 /* =====================
@@ -114,7 +113,6 @@ html, body {
 ===================== */
 .show-logo .placeholder {
   opacity: 0;
-  transition: opacity 0.6s ease;
 }
 
 .show-logo .logo {
@@ -124,20 +122,10 @@ html, body {
 /* =====================
    ANIMATIONS
 ===================== */
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
 @keyframes grainMove {
   0% { transform: translate(0,0); }
   50% { transform: translate(-1%, 1%); }
   100% { transform: translate(1%, -1%); }
-}
-
-@keyframes videoFlicker {
-  0%,100% { opacity: 1; }
-  50% { opacity: 0.95; }
 }
 </style>
 </head>
@@ -146,8 +134,13 @@ html, body {
 
 <!-- VIDEO -->
 <div class="video-bg">
-  <video autoplay muted loop playsinline preload="metadata"
-    poster="8456361-hd_1080_1920_30fps.mp4#t=0.1">
+  <video
+    id="video"
+    muted
+    playsinline
+    preload="metadata"
+    poster="8456361-hd_1080_1920_30fps.mp4#t=0.1"
+  >
     <source src="8456361-hd_1080_1920_30fps.mp4" type="video/mp4">
   </video>
 </div>
@@ -158,7 +151,7 @@ html, body {
 
 <!-- CENTER CONTENT -->
 <div class="center" id="center">
-  <div class="placeholder">COMING&nbsp;SOON</div>
+  <div class="placeholder" id="placeholder">COMING&nbsp;SOON</div>
 
   <img
     src="c66f4082-3131-4280-b821-ee43448d156a.png"
@@ -170,9 +163,27 @@ html, body {
 </div>
 
 <script>
-setTimeout(() => {
-  document.getElementById('center').classList.add('show-logo');
-}, 10000); // 10 secondi
+const video = document.getElementById('video');
+const center = document.getElementById('center');
+const LOGO_TIME = 10; // secondi
+
+video.play();
+
+/* controllo continuo sul tempo del video */
+video.addEventListener('timeupdate', () => {
+  if (video.currentTime >= LOGO_TIME) {
+    center.classList.add('show-logo');
+  } else {
+    center.classList.remove('show-logo');
+  }
+});
+
+/* loop manuale */
+video.addEventListener('ended', () => {
+  center.classList.remove('show-logo');
+  video.currentTime = 0;
+  video.play();
+});
 </script>
 
 </body>
