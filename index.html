@@ -232,8 +232,15 @@ html, body {
   white-space: nowrap;
 }
 
+.sponsor {
+  height: 32px;                 /* area uniforme per tutti */
+  display: flex;
+  align-items: center;          /* centra verticalmente */
+}
+
 .sponsor img {
-  height: 26px;
+  height: 100%;                 /* forza la stessa altezza */
+  max-height: 32px;
   width: auto;
   opacity: 0.75;
   filter: grayscale(100%);
