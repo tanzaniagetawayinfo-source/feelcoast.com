@@ -197,45 +197,63 @@ html, body {
 }
 
 /* =====================
-   SPONSORS STRIP (BOTTOM, MANUAL SCROLL)
+   SPONSORS MARQUEE (BOTTOM, INFINITE)
 ===================== */
 .sponsors {
   position: fixed;
-  bottom: 16px;
   left: 0;
+  bottom: 16px;
   width: 100%;
   z-index: 4;
-  overflow-x: auto;
-  overflow-y: hidden;
-  -webkit-overflow-scrolling: touch;
-  scrollbar-width: none; /* Firefox */
+  overflow: hidden;
+  pointer-events: none;
 }
 
-.sponsors::-webkit-scrollbar {
-  display: none; /* Chrome / Safari */
+.sponsors::before,
+.sponsors::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 40px;
+  z-index: 5;
 }
 
-.sponsors-track {
+.sponsors::before {
+  left: 0;
+  background: linear-gradient(to right, rgba(0,0,0,0.9), rgba(0,0,0,0));
+}
+
+.sponsors::after {
+  right: 0;
+  background: linear-gradient(to left, rgba(0,0,0,0.9), rgba(0,0,0,0));
+}
+
+.sponsors-marquee {
+  display: flex;
+  width: max-content;
+  will-change: transform;
+  animation: sponsorsScroll var(--speed, 30s) linear infinite;
+}
+
+.sponsors-group {
   display: flex;
   gap: 28px;
   padding: 0 24px;
-  width: max-content;
-}
-
-.sponsor {
-  flex: 0 0 auto;
 }
 
 .sponsor img {
-  height: 26px;           /* coerente, leggero */
+  height: 26px;
   width: auto;
   opacity: 0.7;
-  filter: grayscale(100%) blur(0.2px);
+  filter: grayscale(100%) blur(0.15px);
 }
-  to { transform: translateX(-50%); }
+
+@keyframes sponsorsScroll {
+  from { transform: translateX(0); }
+  to { transform: translateX(calc(-1 * var(--loop-width))); }
 }
-  50% { opacity: 1; }
-}
+  
 </style>
 </head>
 
@@ -269,19 +287,11 @@ html, body {
   <img src="menu.png" alt="Menu" loading="eager" decoding="async" />
 </div>
 
-<!-- SPONSORS STRIP (MANUAL SCROLL) -->
-<div class="sponsors">
-  <div class="sponsors-track">
-    <div class="sponsor"><img src="sponsor1.png" alt="Sponsor 1" loading="lazy"></div>
-    <div class="sponsor"><img src="sponsor2.png" alt="Sponsor 2" loading="lazy"></div>
-    <div class="sponsor"><img src="sponsor3.png" alt="Sponsor 3" loading="lazy"></div>
-    <div class="sponsor"><img src="sponsor4.png" alt="Sponsor 4" loading="lazy"></div>
-    <div class="sponsor"><img src="sponsor5.png" alt="Sponsor 5" loading="lazy"></div>
-    <div class="sponsor"><img src="sponsor6.png" alt="Sponsor 6" loading="lazy"></div>
-    <div class="sponsor"><img src="sponsor7.png" alt="Sponsor 7" loading="lazy"></div>
-    <div class="sponsor"><img src="sponsor8.png" alt="Sponsor 8" loading="lazy"></div>
-    <div class="sponsor"><img src="sponsor9.png" alt="Sponsor 9" loading="lazy"></div>
-    <div class="sponsor"><img src="sponsor10.png" alt="Sponsor 10" loading="lazy"></div>
+<!-- SPONSORS MARQUEE (INFINITE) -->
+<div class="sponsors" id="sponsors" style="display:none;">
+  <div class="sponsors-marquee" id="sponsorsMarquee">
+    <div class="sponsors-group" id="sponsorsA"></div>
+    <div class="sponsors-group" id="sponsorsB" aria-hidden="true"></div>
   </div>
 </div>
 
@@ -352,6 +362,53 @@ video.addEventListener('ended', () => {
   center.classList.remove('show-logo');
   video.currentTime = 0;
   video.play().catch(() => {});
+});
+
+/* =====================
+   SPONSORS INIT (solo file esistenti, loop infinito)
+===================== */
+(function initSponsors() {
+  const host = document.getElementById('sponsors');
+  const marquee = document.getElementById('sponsorsMarquee');
+  const A = document.getElementById('sponsorsA');
+  const B = document.getElementById('sponsorsB');
+  if (!host || !marquee || !A || !B) return;
+
+  const candidates = Array.from({ length: 10 }, (_, i) => `sponsor${i + 1}.png`);
+  const loaded = [];
+  let checked = 0;
+
+  candidates.forEach(src => {
+    const img = new Image();
+    img.onload = () => { loaded.push(src); done(); };
+    img.onerror = () => done();
+    img.src = src;
+  });
+
+  function done() {
+    checked++;
+    if (checked === candidates.length) build();
+  }
+
+  function build() {
+    if (!loaded.length) return;
+    host.style.display = 'block';
+
+    const min = 12;
+    const list = [];
+    while (list.length < min) list.push(...loaded);
+
+    A.innerHTML = list.map((s,i)=>`<div class=\"sponsor\"><img src=\"${s}\" alt=\"Sponsor ${i+1}\" loading=\"lazy\"></div>`).join('');
+    B.innerHTML = A.innerHTML;
+
+    requestAnimationFrame(() => {
+      const w = A.getBoundingClientRect().width;
+      marquee.style.setProperty('--loop-width', `${w}px`);
+      marquee.style.setProperty('--speed', `${Math.min(40, Math.max(18, w/60))}s`);
+    });
+  }
+})();
+video.play().catch(() => {});
 });
 </script>
 
