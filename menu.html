@@ -92,39 +92,21 @@ html, body {
 
 <body>
 
-<div class="menu-overlay" id="menuOverlay" onclick="closeMenu()">
+<div class="menu-overlay" id="menuOverlay" onclick="this.remove()">
   <div class="menu-panel" onclick="event.stopPropagation()">
-    <div class="menu-close" onclick="closeMenu()">✕</div>
+    <div class="menu-close" onclick="this.closest('.menu-overlay').remove()">✕</div>
 
-    <div class="menu-link" onclick="openForm('location')">
+    <div class="menu-link" onclick="window.location.href='form.html?type=location'">
       PROPOSE YOUR LOCATION
     </div>
 
-    <div class="menu-link" onclick="openForm('sponsor')">
+    <div class="menu-link" onclick="window.location.href='form.html?type=sponsor'">
       BECOME A SPONSOR
     </div>
   </div>
 </div>
 
-<script>
-(function () {
-  const overlay = document.getElementById('menuOverlay');
 
-  window.closeMenu = function () {
-    if (!overlay) return;
-    overlay.style.opacity = '0';
-    overlay.style.pointerEvents = 'none';
-    setTimeout(() => {
-      if (overlay && overlay.parentNode) overlay.parentNode.removeChild(overlay);
-    }, 300);
-  };
-
-  window.openForm = function (type) {
-    closeMenu();
-    window.location.href = `form.html?type=${type}`;
-  };
-})();
-</script>
 
 </body>
 </html>
