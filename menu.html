@@ -23,10 +23,11 @@ html, body {
   inset: 0;
   background: rgba(0,0,0,0.6);
   backdrop-filter: blur(6px);
-  z-index: 100;
+  z-index: 9999;            /* forza sopra a tutto */
   display: flex;
   justify-content: flex-end;
   animation: fadeIn 0.3s ease;
+  pointer-events: auto;    /* assicura click attivi */
 }
 
 /* =====================
@@ -43,6 +44,7 @@ html, body {
   display: flex;
   flex-direction: column;
   justify-content: center;
+  pointer-events: auto;    /* cliccabile anche se parent blocca */
 }
 
 /* =====================
@@ -73,6 +75,7 @@ html, body {
   font-size: 22px;
   color: rgba(255,255,255,0.6);
   cursor: pointer;
+  pointer-events: auto;    /* garantisce click sulla X */
 }
 
 /* =====================
