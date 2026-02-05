@@ -129,17 +129,22 @@ html, body {
 }
 
 /* =====================
-   SMALL TOP-RIGHT LOGO (FAST)
+   SMALL TOP-LEFT LOGO (FAST)
 ===================== */
 .corner-logo {
   position: fixed;
   top: 14px;
-  right: 14px;
+  left: 14px;            /* SINISTRA */
   z-index: 5;
-  width: 64px;           /* piccolo = carica veloce */
+  width: 56px;           /* piccolo = carica veloce */
   opacity: 0.55;         /* low-impact visivo */
-  filter: blur(0.3px);   /* maschera qualità */
+  filter: blur(0.4px);   /* maschera qualità (low-res feel) */
   pointer-events: none;  /* non cliccabile */
+}
+
+.corner-logo img {
+  width: 100%;
+  height: auto;
 }
 
 .corner-logo img {
@@ -164,7 +169,7 @@ html, body {
   </video>
 </div>
 
-<!-- TOP RIGHT LOGO (LOW IMPACT) -->
+<!-- TOP LEFT LOGO (LOW IMPACT) -->
 <div class="corner-logo">
   <img src="c66f4082-3131-4280-b821-ee43448d156a.png" alt="Feel Coast" loading="eager" decoding="async" />
 </div>
