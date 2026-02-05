@@ -195,6 +195,47 @@ html, body {
   0%,100% { opacity: 0.4; }
   50% { opacity: 1; }
 }
+
+/* =====================
+   SPONSORS STRIP (BOTTOM, MANUAL SCROLL)
+===================== */
+.sponsors {
+  position: fixed;
+  bottom: 16px;
+  left: 0;
+  width: 100%;
+  z-index: 4;
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none; /* Firefox */
+}
+
+.sponsors::-webkit-scrollbar {
+  display: none; /* Chrome / Safari */
+}
+
+.sponsors-track {
+  display: flex;
+  gap: 28px;
+  padding: 0 24px;
+  width: max-content;
+}
+
+.sponsor {
+  flex: 0 0 auto;
+}
+
+.sponsor img {
+  height: 26px;           /* coerente, leggero */
+  width: auto;
+  opacity: 0.7;
+  filter: grayscale(100%) blur(0.2px);
+}
+  to { transform: translateX(-50%); }
+}
+  50% { opacity: 1; }
+}
 </style>
 </head>
 
@@ -226,6 +267,22 @@ html, body {
 <!-- TOP RIGHT MENU ICON -->
 <div class="corner-menu">
   <img src="menu.png" alt="Menu" loading="eager" decoding="async" />
+</div>
+
+<!-- SPONSORS STRIP (MANUAL SCROLL) -->
+<div class="sponsors">
+  <div class="sponsors-track">
+    <div class="sponsor"><img src="sponsor1.png" alt="Sponsor 1" loading="lazy"></div>
+    <div class="sponsor"><img src="sponsor2.png" alt="Sponsor 2" loading="lazy"></div>
+    <div class="sponsor"><img src="sponsor3.png" alt="Sponsor 3" loading="lazy"></div>
+    <div class="sponsor"><img src="sponsor4.png" alt="Sponsor 4" loading="lazy"></div>
+    <div class="sponsor"><img src="sponsor5.png" alt="Sponsor 5" loading="lazy"></div>
+    <div class="sponsor"><img src="sponsor6.png" alt="Sponsor 6" loading="lazy"></div>
+    <div class="sponsor"><img src="sponsor7.png" alt="Sponsor 7" loading="lazy"></div>
+    <div class="sponsor"><img src="sponsor8.png" alt="Sponsor 8" loading="lazy"></div>
+    <div class="sponsor"><img src="sponsor9.png" alt="Sponsor 9" loading="lazy"></div>
+    <div class="sponsor"><img src="sponsor10.png" alt="Sponsor 10" loading="lazy"></div>
+  </div>
 </div>
 
 <!-- EFFECTS -->
