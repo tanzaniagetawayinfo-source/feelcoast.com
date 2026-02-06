@@ -66,6 +66,21 @@ html, body {
 }
 
 /* =====================
+   PRIVATE LINK (SUBTLE)
+===================== */
+.private-link {
+  margin-top: 36px;
+  font-size: 12px;
+  letter-spacing: 0.28em;
+  color: rgba(255,255,255,0.35);
+}
+
+.private-link:hover {
+  color: rgba(255,255,255,0.6);
+  transform: translateX(4px);
+}
+
+/* =====================
    CLOSE
 ===================== */
 .menu-close {
@@ -105,9 +120,13 @@ html, body {
 
     <div class="menu-link" onclick="this.closest('.menu-overlay').remove(); window.location.href='form.html?type=sponsor'">
       BECOME A SPONSOR
+        <div class="menu-link private-link" onclick="this.closest('.menu-overlay').remove(); window.location.href='private.html'">
+      PRIVATE AREA
     </div>
+
   </div>
 </div>
+
 
 
 
