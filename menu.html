@@ -70,14 +70,27 @@ html, body {
 }
 
 /* =====================
-   PRIVATE LINK (SUBTLE)
+   PRIVATE LINK (FORCED VISIBLE)
 ===================== */
 .private-link {
-  margin-top: 24px;
-  font-size: 11px;
+  margin-top: 32px;
+  font-size: 14px;                 /* FORZATO: leggibile su desktop */
   letter-spacing: 0.32em;
-  color: rgba(255,255,255,0.45); /* più visibile su mobile */
-  text-align: center;
+  color: #ffffff;                  /* FORZATO: bianco pieno */
+  opacity: 1;                      /* nessuna trasparenza */
+  text-align: right;
+  justify-content: flex-end;
+  border-top: 1px solid rgba(255,255,255,0.25); /* separatore visivo */
+  padding-top: 16px;
+}
+
+.private-link:hover {
+  opacity: 1;
+  transform: none;                 /* niente animazioni strane */
+}
+
+.private-link:hover {
+  color: rgba(255,255,255,0.75);
 }
 
 .private-link:hover {
