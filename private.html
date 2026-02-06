@@ -32,11 +32,11 @@
     max-width: 460px;
     padding: 36px 28px;
     background: rgba(0,0,0,0.82);
-    border: 1px solid rgba(255,255,255,0.12);
     box-shadow: 0 24px 80px rgba(0,0,0,0.85);
     text-align: center;
     border-radius: 14px;
     backdrop-filter: blur(8px);
+  }
   }
 
   h1 {
@@ -100,6 +100,11 @@
     display: none;
     max-width: 980px;
     text-align: left;
+    background: transparent;
+    box-shadow: none;
+    border: none;
+    padding: 0;
+  }
   }
 
   .subtitle {
@@ -115,9 +120,13 @@
   }
 
   .issue {
-    padding: 14px 2px;
-    border-bottom: 1px solid rgba(255,255,255,0.08);
+    padding: 18px 16px;
+    margin: 18px 0;
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 14px;
     position: relative;
+    background: rgba(0,0,0,0.55);
+  }
   }
 
   .issue-title {
@@ -221,15 +230,11 @@
 
   <!-- DASHBOARD -->
   <div class="card dashboard" id="dashboard">
-    <div class="row">
-      <div class="pill">
-        <div class="dot"></div>
-        <h1 style="margin:0;">ADMIN</h1>
-      </div>
-      <a class="ghost" href="index.html">← Back to home</a>
+    <div class="row" style="flex-direction:column; align-items:center; position:relative; margin-bottom:28px;">
+      <a class="ghost" href="index.html" style="position:absolute; left:0; top:0;">← Back to home</a>
+      <h1 style="margin:22px 0 0; text-align:center;">ADMIN</h1>
     </div>
 
-    <p class="subtitle">Requests (GitHub Issues)</p>
     <div id="issues" class="issues"></div>
     <p class="small" id="meta" style="margin-top:14px;"></p>
   </div>
