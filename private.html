@@ -26,11 +26,11 @@ html, body {
 
 .card {
   width: 100%;
-  max-width: 360px;
-  padding: 32px 28px;
-  background: rgba(0,0,0,0.75);
-  border: 1px solid rgba(255,255,255,0.08);
-  box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+  max-width: 420px;
+  padding: 36px 32px;
+  background: rgba(0,0,0,0.8);
+  border: 1px solid rgba(255,255,255,0.1);
+  box-shadow: 0 24px 80px rgba(0,0,0,0.8);
   text-align: center;
 }
 
@@ -42,25 +42,29 @@ h1 {
 
 input {
   width: 100%;
+  max-width: 240px;
   padding: 14px 12px;
   background: #000;
-  border: 1px solid rgba(255,255,255,0.2);
+  border: 1px solid rgba(255,255,255,0.25);
   color: #fff;
   font-size: 16px;
   text-align: center;
   letter-spacing: 0.3em;
+  border-radius: 6px;
 }
 
 button {
   width: 100%;
+  max-width: 240px;
   margin-top: 18px;
   padding: 14px;
   background: #fff;
   color: #000;
   border: none;
-  font-size: 13px;
-  letter-spacing: 0.25em;
+  font-size: 12px;
+  letter-spacing: 0.28em;
   cursor: pointer;
+  border-radius: 6px;
 }
 
 .error {
@@ -72,6 +76,30 @@ button {
 
 .dashboard {
   display: none;
+  max-width: 720px;
+}
+
+.subtitle {
+  font-size: 13px;
+  opacity: 0.6;
+  margin-bottom: 24px;
+}
+
+.issues {
+  text-align: left;
+  font-size: 13px;
+}
+
+.issues > div {
+  padding: 14px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+
+.login-stack {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
 }
 
 .back {
@@ -87,24 +115,23 @@ button {
 
 <div class="wrapper">
 
-      <div class="card" id="loginCard">
+  <!-- LOGIN CARD -->
+  <div class="card" id="loginCard">
     <h1>PRIVATE AREA</h1>
-    <div style="display:flex; flex-direction:column; align-items:center; gap:16px;">
-      <input type="password" id="pin" placeholder="PIN" maxlength="4" style="max-width:220px;" />
-      <button onclick="checkPin()" style="max-width:220px;">ENTER</button>
+    <div class="login-stack">
+      <input type="password" id="pin" placeholder="PIN" maxlength="4" />
+      <button onclick="checkPin()">ENTER</button>
     </div>
     <div class="error" id="error">Wrong PIN</div>
     <div class="back" onclick="window.location.href='index.html'">← Back to home</div>
   </div>
-    <div class="back" onclick="window.location.href='index.html'">← Back to home</div>
-  </div>
 
-    <div class="card dashboard" id="dashboard">
+  <!-- DASHBOARD -->
+  <div class="card dashboard" id="dashboard">
     <h1>ADMIN</h1>
-    <p style="font-size:13px; opacity:0.7; margin-bottom:20px;">Requests</p>
-    <div id="issues" style="text-align:left; font-size:13px;"></div>
+    <p class="subtitle">Requests</p>
+    <div id="issues" class="issues"></div>
     <div class="back" onclick="window.location.href='index.html'">← Back to home</div>
-  </div>
   </div>
 
 </div>
@@ -122,7 +149,8 @@ async function loadIssues() {
     const el = document.createElement('div');
     el.style.borderBottom = '1px solid rgba(255,255,255,0.08)';
     el.style.padding = '10px 0';
-    el.innerHTML = `<strong>${i.title}</strong><br/><span style="opacity:0.6">${i.body.replace(/\n/g,'<br/>')}</span>`;
+    el.innerHTML = `<strong>${i.title}</strong><br/><span style="opacity:0.6">${i.body.replace(/
+/g,'<br/>')}</span>`;
     container.appendChild(el);
   });
 }
