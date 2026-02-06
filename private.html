@@ -87,7 +87,7 @@ button {
 
 <div class="wrapper">
 
-    <div class="card" id="loginCard">
+      <div class="card" id="loginCard">
     <h1>PRIVATE AREA</h1>
     <div style="display:flex; flex-direction:column; align-items:center; gap:16px;">
       <input type="password" id="pin" placeholder="PIN" maxlength="4" style="max-width:220px;" />
@@ -112,30 +112,20 @@ button {
 <script>
 const CORRECT_PIN = '5982';
 
-function checkPin() {
-  const pin = document.getElementById('pin').value;
-  if (pin === CORRECT_PIN) {
-    document.getElementById('loginCard').style.display = 'none';
-    document.getElementById('dashboard').style.display = 'block';
-  } else {
-    document.getElementById('error').style.display = 'block';
-  }
-}
-  async function loadIssues() {
-    const res = await fetch('https://cool-haze-b97a.tanzaniagetaway-info.workers.dev/issues');
-    const data = await res.json();
-    const container = document.getElementById('issues');
-    container.innerHTML = data.length ? '' : '<p style="opacity:0.5">No requests yet</p>';
+async function loadIssues() {
+  const res = await fetch('https://cool-haze-b97a.tanzaniagetaway-info.workers.dev/issues');
+  const data = await res.json();
+  const container = document.getElementById('issues');
+  container.innerHTML = data.length ? '' : '<p style="opacity:0.5">No requests yet</p>';
 
-    data.forEach(i => {
-      const el = document.createElement('div');
-      el.style.borderBottom = '1px solid rgba(255,255,255,0.08)';
-      el.style.padding = '10px 0';
-      el.innerHTML = `<strong>${i.title}</strong><br/><span style="opacity:0.6">${i.body.replace(/
-/g,'<br/>')}</span>`;
-      container.appendChild(el);
-    });
-  }
+  data.forEach(i => {
+    const el = document.createElement('div');
+    el.style.borderBottom = '1px solid rgba(255,255,255,0.08)';
+    el.style.padding = '10px 0';
+    el.innerHTML = `<strong>${i.title}</strong><br/><span style="opacity:0.6">${i.body.replace(/\n/g,'<br/>')}</span>`;
+    container.appendChild(el);
+  });
+}
 
 function checkPin() {
   const pin = document.getElementById('pin').value;
