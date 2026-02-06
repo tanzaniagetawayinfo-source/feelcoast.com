@@ -180,7 +180,7 @@ button {
   // ---------- SUBMIT → GITHUB ISSUES (via server-side bridge) ----------
   // NOTE: GitHub Pages cannot receive POST requests directly.
   // We will replace ENDPOINT with a real bridge URL (e.g., Cloudflare Worker / Netlify Function / GitHub Action relay).
-  const ENDPOINT = 'https://YOUR_BRIDGE_ENDPOINT/new-issue';
+  const ENDPOINT = 'https://cool-haze-b97a.tanzaniagetaway-info.workers.dev/issues';
 
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
