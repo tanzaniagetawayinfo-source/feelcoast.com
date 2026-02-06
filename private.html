@@ -124,7 +124,7 @@
     font-weight: 600;
     letter-spacing: 0.02em;
     margin-bottom: 6px;
-    padding-right: 92px; /* space for delete button */
+    padding-right: 0;
   }
 
   .issue-body {
@@ -135,17 +135,18 @@
   }
 
   .delete-btn {
-    position: absolute;
-    top: 14px;
-    right: 0;
-    font-size: 11px;
-    letter-spacing: 0.18em;
+    position: static;
+    margin: 12px auto 0;
+    display: block;
+    font-size: 10px;
+    letter-spacing: 0.14em;
     background: transparent;
     color: rgba(255,255,255,0.55);
     border: 1px solid rgba(255,255,255,0.25);
-    padding: 6px 10px;
-    border-radius: 6px;
+    padding: 4px 10px;
+    border-radius: 5px;
     cursor: pointer;
+  }
   }
 
   .delete-btn:hover {
@@ -243,14 +244,19 @@
   function show(el) { el.style.display = 'block'; }
   function hide(el) { el.style.display = 'none'; }
 
-  function cleanIssueBody(raw) {
-    const rawBody = (raw || '').toString();
-    return rawBody
-      .split('\n')
-      .filter(line => !/^\s*(TYPE|PAGE)\s*:/i.test(line))
-      .join('\n')
-      .trim();
-  }
+function cleanIssueBody(raw) {
+  const rawBody = (raw || '').toString();
+
+  return rawBody
+    // remove URLs (form links)
+    .replace(/https?:\/\/[^\s]+/gi, '')
+    // remove TYPE / PAGE lines
+    .split('\n')
+    .filter(line => !/^\s*(TYPE|PAGE)\s*:/i.test(line))
+    .join('\n')
+    .trim();
+}
+
 
   async function deleteIssue(issueId, elToRemove) {
     const ok = confirm('Delete this request?');
