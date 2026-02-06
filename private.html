@@ -119,7 +119,7 @@ button {
   <div class="card" id="loginCard">
     <h1>PRIVATE AREA</h1>
     <div class="login-stack">
-      <input type="password" id="pin" placeholder="PIN" maxlength="4" />
+      <input type="password" id="pin" placeholder="PIN" maxlength="4" onkeydown="if(event.key==='Enter'){checkPin()}" />
       <button onclick="checkPin()">ENTER</button>
     </div>
     <div class="error" id="error">Wrong PIN</div>
