@@ -6,108 +6,195 @@
 <title>Private Area — Feel Coast</title>
 
 <style>
-html, body {
-  margin: 0;
-  padding: 0;
-  width: 100%;
-  height: 100%;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  background: #000;
-  color: #fff;
-}
+  html, body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: #000;
+    color: #fff;
+  }
 
-.wrapper {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
+  * { box-sizing: border-box; }
 
-.card {
-  width: 100%;
-  max-width: 420px;
-  padding: 36px 32px;
-  background: rgba(0,0,0,0.8);
-  border: 1px solid rgba(255,255,255,0.1);
-  box-shadow: 0 24px 80px rgba(0,0,0,0.8);
-  text-align: center;
-}
+  .wrapper {
+    width: 100%;
+    min-height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 18px;
+  }
 
-h1 {
-  font-size: 18px;
-  letter-spacing: 0.22em;
-  margin-bottom: 24px;
-}
+  .card {
+    width: 100%;
+    max-width: 460px;
+    padding: 36px 28px;
+    background: rgba(0,0,0,0.82);
+    border: 1px solid rgba(255,255,255,0.12);
+    box-shadow: 0 24px 80px rgba(0,0,0,0.85);
+    text-align: center;
+    border-radius: 14px;
+    backdrop-filter: blur(8px);
+  }
 
-input {
-  width: 100%;
-  max-width: 240px;
-  padding: 14px 12px;
-  background: #000;
-  border: 1px solid rgba(255,255,255,0.25);
-  color: #fff;
-  font-size: 16px;
-  text-align: center;
-  letter-spacing: 0.3em;
-  border-radius: 6px;
-}
+  h1 {
+    font-size: 14px;
+    letter-spacing: 0.32em;
+    margin: 0 0 22px;
+    opacity: 0.95;
+  }
 
-button {
-  width: 100%;
-  max-width: 240px;
-  margin-top: 18px;
-  padding: 14px;
-  background: #fff;
-  color: #000;
-  border: none;
-  font-size: 12px;
-  letter-spacing: 0.28em;
-  cursor: pointer;
-  border-radius: 6px;
-}
+  .login-stack {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+    margin-top: 6px;
+  }
 
-.error {
-  margin-top: 14px;
-  font-size: 12px;
-  color: rgba(255,255,255,0.5);
-  display: none;
-}
+  input {
+    width: 100%;
+    max-width: 260px;
+    padding: 14px 12px;
+    background: rgba(0,0,0,0.7);
+    border: 1px solid rgba(255,255,255,0.22);
+    color: #fff;
+    font-size: 16px;
+    text-align: center;
+    letter-spacing: 0.45em;
+    border-radius: 10px;
+    outline: none;
+  }
 
-.dashboard {
-  display: none;
-  max-width: 720px;
-}
+  input:focus {
+    border-color: rgba(255,255,255,0.45);
+  }
 
-.subtitle {
-  font-size: 13px;
-  opacity: 0.6;
-  margin-bottom: 24px;
-}
+  button {
+    width: 100%;
+    max-width: 260px;
+    padding: 14px;
+    background: #fff;
+    color: #000;
+    border: none;
+    font-size: 12px;
+    letter-spacing: 0.28em;
+    cursor: pointer;
+    border-radius: 10px;
+  }
 
-.issues {
-  text-align: left;
-  font-size: 13px;
-}
+  button:active {
+    transform: translateY(1px);
+  }
 
-.issues > div {
-  padding: 14px 0;
-  border-bottom: 1px solid rgba(255,255,255,0.08);
-}
+  .error {
+    margin-top: 14px;
+    font-size: 12px;
+    color: rgba(255,255,255,0.55);
+    display: none;
+  }
 
-.login-stack {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 16px;
-}
+  .dashboard {
+    display: none;
+    max-width: 980px;
+    text-align: left;
+  }
 
-.back {
-  margin-top: 24px;
-  font-size: 12px;
-  color: rgba(255,255,255,0.4);
-  cursor: pointer;
-}
+  .subtitle {
+    font-size: 12px;
+    letter-spacing: 0.12em;
+    opacity: 0.6;
+    margin: 0 0 18px;
+  }
+
+  .issues {
+    font-size: 13px;
+    border-top: 1px solid rgba(255,255,255,0.08);
+  }
+
+  .issue {
+    padding: 14px 2px;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+    position: relative;
+  }
+
+  .issue-title {
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    margin-bottom: 6px;
+    padding-right: 92px; /* space for delete button */
+  }
+
+  .issue-body {
+    opacity: 0.7;
+    line-height: 1.45;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+
+  .delete-btn {
+    position: absolute;
+    top: 14px;
+    right: 0;
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    background: transparent;
+    color: rgba(255,255,255,0.55);
+    border: 1px solid rgba(255,255,255,0.25);
+    padding: 6px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+
+  .delete-btn:hover {
+    color: #fff;
+    border-color: rgba(255,255,255,0.5);
+  }
+
+  .row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 14px;
+  }
+
+  .ghost {
+    font-size: 12px;
+    color: rgba(255,255,255,0.45);
+    cursor: pointer;
+    text-decoration: none;
+    letter-spacing: 0.02em;
+    white-space: nowrap;
+  }
+
+  .ghost:hover { color: rgba(255,255,255,0.65); }
+
+  .pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 999px;
+    background: rgba(255,255,255,0.5);
+  }
+
+  .small {
+    font-size: 12px;
+    opacity: 0.6;
+  }
+
+  @media (max-width: 420px) {
+    .card { padding: 32px 20px; }
+    input, button { max-width: 100%; }
+    .issue-title { padding-right: 84px; }
+  }
 </style>
 </head>
 
@@ -118,53 +205,165 @@ button {
   <!-- LOGIN CARD -->
   <div class="card" id="loginCard">
     <h1>PRIVATE AREA</h1>
+
     <div class="login-stack">
-      <input type="password" id="pin" placeholder="PIN" maxlength="4" onkeydown="if(event.key==='Enter'){checkPin()}" />
-      <button onclick="checkPin()">ENTER</button>
+      <input type="password" id="pin" placeholder="PIN" maxlength="8" inputmode="numeric" autocomplete="one-time-code" />
+      <button id="enterBtn" type="button">ENTER</button>
     </div>
+
     <div class="error" id="error">Wrong PIN</div>
-    <div class="back" onclick="window.location.href='index.html'">← Back to home</div>
+
+    <div style="margin-top:22px;">
+      <a class="ghost" href="index.html">← Back to home</a>
+    </div>
   </div>
 
   <!-- DASHBOARD -->
   <div class="card dashboard" id="dashboard">
-    <h1>ADMIN</h1>
-    <p class="subtitle">Requests</p>
+    <div class="row">
+      <div class="pill">
+        <div class="dot"></div>
+        <h1 style="margin:0;">ADMIN</h1>
+      </div>
+      <a class="ghost" href="index.html">← Back to home</a>
+    </div>
+
+    <p class="subtitle">Requests (GitHub Issues)</p>
     <div id="issues" class="issues"></div>
-    <div class="back" onclick="window.location.href='index.html'">← Back to home</div>
+    <p class="small" id="meta" style="margin-top:14px;"></p>
   </div>
 
 </div>
 
 <script>
-const CORRECT_PIN = '5982';
+  const CORRECT_PIN = '5982';
+  const ISSUES_ENDPOINT = 'https://cool-haze-b97a.tanzaniagetaway-info.workers.dev/issues';
 
-async function loadIssues() {
-  const res = await fetch('https://cool-haze-b97a.tanzaniagetaway-info.workers.dev/issues');
-  const data = await res.json();
-  const container = document.getElementById('issues');
-  container.innerHTML = data.length ? '' : '<p style="opacity:0.5">No requests yet</p>';
+  function getEl(id) { return document.getElementById(id); }
+  function show(el) { el.style.display = 'block'; }
+  function hide(el) { el.style.display = 'none'; }
 
-  data.forEach(i => {
-    const el = document.createElement('div');
-    el.style.borderBottom = '1px solid rgba(255,255,255,0.08)';
-    el.style.padding = '10px 0';
-    el.innerHTML = `<strong>${i.title}</strong><br/><span style="opacity:0.6">${i.body.replace(/
-/g,'<br/>')}</span>`;
-    container.appendChild(el);
-  });
-}
-
-function checkPin() {
-  const pin = document.getElementById('pin').value;
-  if (pin === CORRECT_PIN) {
-    document.getElementById('loginCard').style.display = 'none';
-    document.getElementById('dashboard').style.display = 'block';
-    loadIssues();
-  } else {
-    document.getElementById('error').style.display = 'block';
+  function cleanIssueBody(raw) {
+    const rawBody = (raw || '').toString();
+    return rawBody
+      .split('\n')
+      .filter(line => !/^\s*(TYPE|PAGE)\s*:/i.test(line))
+      .join('\n')
+      .trim();
   }
-}
+
+  async function deleteIssue(issueId, elToRemove) {
+    const ok = confirm('Delete this request?');
+    if (!ok) return;
+
+    try {
+      const res = await fetch(`${ISSUES_ENDPOINT}/${encodeURIComponent(issueId)}`, { method: 'DELETE' });
+      if (!res.ok) throw new Error('Delete failed (HTTP ' + res.status + ')');
+      elToRemove.remove();
+    } catch (err) {
+      alert('Unable to delete request');
+      console.error(err);
+    }
+  }
+
+  async function loadIssues() {
+    const container = getEl('issues');
+    const meta = getEl('meta');
+
+    container.innerHTML = '<div class="issue"><div class="issue-body">Loading…</div></div>';
+    meta.textContent = '';
+
+    try {
+      const res = await fetch(ISSUES_ENDPOINT, { cache: 'no-store' });
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+
+      const data = await res.json();
+      const list = Array.isArray(data) ? data : [];
+
+      container.innerHTML = '';
+
+      if (!list.length) {
+        container.innerHTML = '<div class="issue"><div class="issue-body">No requests yet.</div></div>';
+        meta.textContent = 'Loaded 0 item(s).';
+        return;
+      }
+
+      for (const i of list) {
+        const el = document.createElement('div');
+        el.className = 'issue';
+
+        const title = document.createElement('div');
+        title.className = 'issue-title';
+        title.textContent = i && i.title ? i.title : '(no title)';
+
+        const body = document.createElement('div');
+        body.className = 'issue-body';
+        body.textContent = cleanIssueBody(i && i.body ? i.body : '');
+
+        // DELETE button (requires Worker: DELETE /issues/:id)
+        if (i && i.id) {
+          const del = document.createElement('button');
+          del.className = 'delete-btn';
+          del.type = 'button';
+          del.textContent = 'DELETE';
+          del.addEventListener('click', () => deleteIssue(i.id, el));
+          el.appendChild(del);
+        }
+
+        el.appendChild(title);
+        el.appendChild(body);
+        container.appendChild(el);
+      }
+
+      meta.textContent = `Loaded ${list.length} item(s).`;
+    } catch (e) {
+      container.innerHTML = '<div class="issue"><div class="issue-body">Error loading requests. Check the Worker endpoint.</div></div>';
+      meta.textContent = String(e && e.message ? e.message : e);
+      console.error(e);
+    }
+  }
+
+  function checkPin() {
+    const pin = (getEl('pin').value || '').trim();
+
+    if (pin === CORRECT_PIN) {
+      hide(getEl('loginCard'));
+      show(getEl('dashboard'));
+      loadIssues();
+      return;
+    }
+
+    show(getEl('error'));
+  }
+
+  // Small self-tests (non-blocking) to catch common regressions in console.
+  function runSelfTests() {
+    try {
+      console.assert(cleanIssueBody('TYPE: x\nHello\nPAGE: y').includes('Hello'), 'cleanIssueBody should keep content');
+      console.assert(!/^TYPE:/i.test(cleanIssueBody('TYPE: x\nHello')), 'cleanIssueBody should remove TYPE lines');
+      console.assert(!/^PAGE:/i.test(cleanIssueBody('PAGE: x\nHello')), 'cleanIssueBody should remove PAGE lines');
+    } catch (_) {}
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const pin = getEl('pin');
+    const btn = getEl('enterBtn');
+
+    btn.addEventListener('click', checkPin);
+    pin.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        checkPin();
+      }
+    });
+
+    pin.addEventListener('input', () => {
+      hide(getEl('error'));
+    });
+
+    runSelfTests();
+    pin.focus();
+  });
 </script>
 
 </body>
