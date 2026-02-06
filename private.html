@@ -306,18 +306,19 @@ function cleanIssueBody(raw) {
         body.className = 'issue-body';
         body.textContent = cleanIssueBody(i && i.body ? i.body : '');
 
-        // DELETE button (requires Worker: DELETE /issues/:id)
+                // DELETE button (requires Worker: DELETE /issues/:id)
+        let del = null;
         if (i && i.id) {
-          const del = document.createElement('button');
+          del = document.createElement('button');
           del.className = 'delete-btn';
           del.type = 'button';
           del.textContent = 'DELETE';
           del.addEventListener('click', () => deleteIssue(i.id, el));
-          el.appendChild(del);
         }
 
-        el.appendChild(title);
+                el.appendChild(title);
         el.appendChild(body);
+        if (del) el.appendChild(del);
         container.appendChild(el);
       }
 
