@@ -43,8 +43,8 @@ html, body {
   animation: slideIn 0.4s ease;
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  pointer-events: auto;    /* cliccabile anche se parent blocca */
+  justify-content: space-between; /* top links + bottom private */
+  pointer-events: auto;
 }
 
 /* =====================
@@ -122,7 +122,7 @@ html, body {
       BECOME A SPONSOR
     </div>
 
-    <div class="menu-link private-link" onclick="this.closest('.menu-overlay').remove(); window.location.href='private.html'">
+        <div class="menu-link private-link" style="margin-top:0;" onclick="this.closest('.menu-overlay').remove(); window.location.href='private.html'">
       PRIVATE AREA
     </div>
 
