@@ -56,7 +56,11 @@ html, body {
   text-decoration: none;
   margin: 18px 0;
   cursor: pointer;
-  text-align: center;              /* centrati */
+  text-align: right;              /* allineati a destra */
+  display: flex;                  /* centra in altezza */
+  align-items: center;
+  justify-content: flex-end;
+  min-height: 44px;               /* area touch stabile */
   transition: opacity 0.3s ease, transform 0.3s ease;
 }
 
