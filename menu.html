@@ -56,22 +56,24 @@ html, body {
   text-decoration: none;
   margin: 18px 0;
   cursor: pointer;
+  text-align: center;              /* centrati */
   transition: opacity 0.3s ease, transform 0.3s ease;
 }
 
 .menu-link:hover {
   opacity: 1;
-  transform: translateX(6px);
+  transform: scale(1.03);          /* niente spostamento verso X */
 }
 
 /* =====================
    PRIVATE LINK (SUBTLE)
 ===================== */
 .private-link {
-  margin-top: 36px;
-  font-size: 12px;
-  letter-spacing: 0.28em;
-  color: rgba(255,255,255,0.35);
+  margin-top: 24px;
+  font-size: 11px;
+  letter-spacing: 0.32em;
+  color: rgba(255,255,255,0.45); /* più visibile su mobile */
+  text-align: center;
 }
 
 .private-link:hover {
@@ -124,7 +126,7 @@ html, body {
 
             </div>
 
-    <div class="menu-bottom" style="margin-top:aut
+    <div class="menu-bottom" style="margin-top:auto; padding-bottom:16px;">
       <div class="menu-link private-link" onclick="this.closest('.menu-overlay').remove(); window.location.href='private.html'">
         PRIVATE AREA
           </div>
