@@ -37,7 +37,6 @@
     border-radius: 14px;
     backdrop-filter: blur(8px);
   }
-  }
 
   h1 {
     font-size: 14px;
@@ -105,14 +104,6 @@
     border: none;
     padding: 0;
   }
-  }
-
-  .subtitle {
-    font-size: 12px;
-    letter-spacing: 0.12em;
-    opacity: 0.6;
-    margin: 0 0 18px;
-  }
 
   .issues {
     font-size: 13px;
@@ -127,13 +118,11 @@
     position: relative;
     background: rgba(0,0,0,0.55);
   }
-  }
 
   .issue-title {
     font-weight: 600;
     letter-spacing: 0.02em;
     margin-bottom: 6px;
-    padding-right: 0;
   }
 
   .issue-body {
@@ -155,7 +144,6 @@
     padding: 4px 10px;
     border-radius: 5px;
     cursor: pointer;
-  }
   }
 
   .delete-btn:hover {
@@ -182,19 +170,6 @@
 
   .ghost:hover { color: rgba(255,255,255,0.65); }
 
-  .pill {
-    display: inline-flex;
-    align-items: center;
-    gap: 10px;
-  }
-
-  .dot {
-    width: 7px;
-    height: 7px;
-    border-radius: 999px;
-    background: rgba(255,255,255,0.5);
-  }
-
   .small {
     font-size: 12px;
     opacity: 0.6;
@@ -203,7 +178,6 @@
   @media (max-width: 420px) {
     .card { padding: 32px 20px; }
     input, button { max-width: 100%; }
-    .issue-title { padding-right: 84px; }
   }
 </style>
 </head>
@@ -235,6 +209,10 @@
       <h1 style="margin:22px 0 0; text-align:center;">ADMIN</h1>
     </div>
 
+    <!-- analytics stats (no border, no flicker) -->
+    <div id="stats" class="issues" style="border:none; padding:0; margin-bottom:24px;"></div>
+
+    <!-- requests -->
     <div id="issues" class="issues"></div>
     <p class="small" id="meta" style="margin-top:14px;"></p>
   </div>
@@ -244,24 +222,23 @@
 <script>
   const CORRECT_PIN = '5982';
   const ISSUES_ENDPOINT = 'https://cool-haze-b97a.tanzaniagetaway-info.workers.dev/issues';
+  const ANALYTICS_ENDPOINT = 'https://cool-haze-b97a.tanzaniagetaway-info.workers.dev/analytics';
 
   function getEl(id) { return document.getElementById(id); }
   function show(el) { el.style.display = 'block'; }
   function hide(el) { el.style.display = 'none'; }
 
-function cleanIssueBody(raw) {
-  const rawBody = (raw || '').toString();
-
-  return rawBody
-    // remove URLs (form links)
-    .replace(/https?:\/\/[^\s]+/gi, '')
-    // remove TYPE / PAGE lines
-    .split('\n')
-    .filter(line => !/^\s*(TYPE|PAGE)\s*:/i.test(line))
-    .join('\n')
-    .trim();
-}
-
+  function cleanIssueBody(raw) {
+    const rawBody = (raw || '').toString();
+    return rawBody
+      // remove URLs (form links)
+      .replace(/https?:\/\/[^\s]+/gi, '')
+      // remove TYPE / PAGE lines
+      .split('\n')
+      .filter(line => !/^\s*(TYPE|PAGE)\s*:/i.test(line))
+      .join('\n')
+      .trim();
+  }
 
   async function deleteIssue(issueId, elToRemove) {
     const ok = confirm('Delete this request?');
@@ -277,62 +254,181 @@ function cleanIssueBody(raw) {
     }
   }
 
-  async function loadIssues() {
+  // ---------- Analytics (no flicker) ----------
+  async function loadAnalytics({ silent = true } = {}) {
+    const box = getEl('stats');
+
+    // Build once
+    if (!box.dataset.ready) {
+      box.dataset.ready = '1';
+      box.innerHTML = `
+        <div class="issue" id="statsCard" style="display:flex;justify-content:space-between;text-align:center;">
+          <div><div class="small">TODAY</div><div id="statToday">-</div></div>
+          <div><div class="small">WEEK</div><div id="statWeek">-</div></div>
+          <div><div class="small">MONTH</div><div id="statMonth">-</div></div>
+        </div>
+      `;
+    }
+
+    const elToday = getEl('statToday');
+    const elWeek = getEl('statWeek');
+    const elMonth = getEl('statMonth');
+
+    try {
+      const res = await fetch(ANALYTICS_ENDPOINT, { cache: 'no-store' });
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      const data = await res.json();
+
+      elToday.textContent = String(data.today ?? '-');
+      elWeek.textContent = String(data.week ?? '-');
+      elMonth.textContent = String(data.month ?? '-');
+    } catch (e) {
+      if (!silent) {
+        elToday.textContent = '-';
+        elWeek.textContent = '-';
+        elMonth.textContent = '-';
+      }
+      console.error(e);
+    }
+  }
+
+  // ---------- Issues (diff update, no flicker) ----------
+  function upsertIssueElement(container, issue) {
+    const id = String(issue.id);
+    let el = container.querySelector(`.issue[data-issue-id="${CSS.escape(id)}"]`);
+
+    const titleText = issue && issue.title ? issue.title : '(no title)';
+    const bodyText = cleanIssueBody(issue && issue.body ? issue.body : '');
+
+    if (!el) {
+      el = document.createElement('div');
+      el.className = 'issue';
+      el.dataset.issueId = id;
+
+      const title = document.createElement('div');
+      title.className = 'issue-title';
+
+      const body = document.createElement('div');
+      body.className = 'issue-body';
+
+      el.appendChild(title);
+      el.appendChild(body);
+
+      const del = document.createElement('button');
+      del.className = 'delete-btn';
+      del.type = 'button';
+      del.textContent = 'DELETE';
+      del.addEventListener('click', () => deleteIssue(issue.id, el));
+      el.appendChild(del);
+
+      container.appendChild(el);
+    }
+
+    const titleEl = el.querySelector('.issue-title');
+    const bodyEl = el.querySelector('.issue-body');
+
+    if (titleEl && titleEl.textContent !== titleText) titleEl.textContent = titleText;
+    if (bodyEl && bodyEl.textContent !== bodyText) bodyEl.textContent = bodyText;
+
+    return el;
+  }
+
+  function reconcileIssues(container, list) {
+    const keep = new Set(list.map(x => String(x.id)));
+
+    // Remove missing
+    const existing = Array.from(container.querySelectorAll('.issue[data-issue-id]'));
+    for (const el of existing) {
+      if (!keep.has(String(el.dataset.issueId))) el.remove();
+    }
+
+    // Upsert and re-order
+    for (const issue of list) upsertIssueElement(container, issue);
+
+    const ordered = list
+      .map(i => container.querySelector(`.issue[data-issue-id="${CSS.escape(String(i.id))}"]`))
+      .filter(Boolean);
+
+    for (const el of ordered) container.appendChild(el);
+  }
+
+  let _issuesFetchInFlight = null;
+
+  async function loadIssues({ silent = true } = {}) {
     const container = getEl('issues');
     const meta = getEl('meta');
 
-    container.innerHTML = '<div class="issue"><div class="issue-body">Loading…</div></div>';
-    meta.textContent = '';
+    // First paint only
+    if (!container.dataset.ready) {
+      container.dataset.ready = '1';
+      container.innerHTML = '<div class="issue" data-issue-id="_loading"><div class="issue-body">Loading…</div></div>';
+      meta.textContent = '';
+    }
+
+    if (_issuesFetchInFlight) return;
+
+    const ctrl = new AbortController();
+    _issuesFetchInFlight = ctrl;
 
     try {
-      const res = await fetch(ISSUES_ENDPOINT, { cache: 'no-store' });
+      const res = await fetch(ISSUES_ENDPOINT, { cache: 'no-store', signal: ctrl.signal });
       if (!res.ok) throw new Error('HTTP ' + res.status);
 
       const data = await res.json();
       const list = Array.isArray(data) ? data : [];
 
-      container.innerHTML = '';
+      // Remove loading placeholder
+      const loading = container.querySelector('.issue[data-issue-id="_loading"]');
+      if (loading) loading.remove();
 
       if (!list.length) {
-        container.innerHTML = '<div class="issue"><div class="issue-body">No requests yet.</div></div>';
+        if (!container.querySelector('.issue[data-issue-id="_empty"]')) {
+          container.innerHTML = '<div class="issue" data-issue-id="_empty"><div class="issue-body">No requests yet.</div></div>';
+        }
         meta.textContent = 'Loaded 0 item(s).';
         return;
       }
 
-      for (const i of list) {
-        const el = document.createElement('div');
-        el.className = 'issue';
+      // Remove empty placeholder if present
+      const empty = container.querySelector('.issue[data-issue-id="_empty"]');
+      if (empty) empty.remove();
 
-        const title = document.createElement('div');
-        title.className = 'issue-title';
-        title.textContent = i && i.title ? i.title : '(no title)';
-
-        const body = document.createElement('div');
-        body.className = 'issue-body';
-        body.textContent = cleanIssueBody(i && i.body ? i.body : '');
-
-                // DELETE button (requires Worker: DELETE /issues/:id)
-        let del = null;
-        if (i && i.id) {
-          del = document.createElement('button');
-          del.className = 'delete-btn';
-          del.type = 'button';
-          del.textContent = 'DELETE';
-          del.addEventListener('click', () => deleteIssue(i.id, el));
-        }
-
-                el.appendChild(title);
-        el.appendChild(body);
-        if (del) el.appendChild(del);
-        container.appendChild(el);
-      }
-
+      reconcileIssues(container, list);
       meta.textContent = `Loaded ${list.length} item(s).`;
     } catch (e) {
-      container.innerHTML = '<div class="issue"><div class="issue-body">Error loading requests. Check the Worker endpoint.</div></div>';
-      meta.textContent = String(e && e.message ? e.message : e);
+      const hasAny = !!container.querySelector('.issue[data-issue-id]:not([data-issue-id="_loading"])');
+      if (!silent && !hasAny) {
+        container.innerHTML = '<div class="issue" data-issue-id="_error"><div class="issue-body">Error loading requests. Check the Worker endpoint.</div></div>';
+      }
+      // Don’t wipe UI on background refresh
+      meta.textContent = (e && e.name === 'AbortError') ? meta.textContent : String(e && e.message ? e.message : e);
       console.error(e);
+    } finally {
+      _issuesFetchInFlight = null;
     }
+  }
+
+  // ---------- Realtime refresh ----------
+  let _refreshTimer = null;
+
+  function startRealtimeRefresh() {
+    if (_refreshTimer) return;
+
+    // First paint (visible)
+    loadAnalytics({ silent: false });
+    loadIssues({ silent: false });
+
+    // Background refresh (no flicker)
+    _refreshTimer = setInterval(() => {
+      if (document.hidden) return;
+      loadAnalytics({ silent: true });
+      loadIssues({ silent: true });
+    }, 30000);
+
+    window.addEventListener('focus', () => {
+      loadAnalytics({ silent: true });
+      loadIssues({ silent: true });
+    });
   }
 
   function checkPin() {
@@ -341,7 +437,7 @@ function cleanIssueBody(raw) {
     if (pin === CORRECT_PIN) {
       hide(getEl('loginCard'));
       show(getEl('dashboard'));
-      loadIssues();
+      startRealtimeRefresh();
       return;
     }
 
@@ -354,6 +450,7 @@ function cleanIssueBody(raw) {
       console.assert(cleanIssueBody('TYPE: x\nHello\nPAGE: y').includes('Hello'), 'cleanIssueBody should keep content');
       console.assert(!/^TYPE:/i.test(cleanIssueBody('TYPE: x\nHello')), 'cleanIssueBody should remove TYPE lines');
       console.assert(!/^PAGE:/i.test(cleanIssueBody('PAGE: x\nHello')), 'cleanIssueBody should remove PAGE lines');
+      console.assert(cleanIssueBody('Visit https://example.com now').includes('Visit'), 'cleanIssueBody should keep text around URLs');
     } catch (_) {}
   }
 
