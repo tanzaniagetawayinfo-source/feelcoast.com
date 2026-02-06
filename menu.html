@@ -111,7 +111,8 @@ html, body {
 <body>
 
 <div class="menu-overlay" id="menuOverlay" onclick="this.remove()">
-  <div class="menu-panel" onclick="event.stopPropagation()">
+    <div class="menu-panel" onclick="event.stopPropagation()">
+    <div class="menu-top">
     <div class="menu-close" onclick="this.closest('.menu-overlay').remove()">✕</div>
 
     <div class="menu-link" onclick="this.closest('.menu-overlay').remove(); window.location.href='form.html?type=location'">
@@ -122,11 +123,14 @@ html, body {
       BECOME A SPONSOR
     </div>
 
-        <div class="menu-link private-link" style="margin-top:0;" onclick="this.closest('.menu-overlay').remove(); window.location.href='private.html'">
-      PRIVATE AREA
-    </div>
+            </div>
 
+    <div class="menu-bottom">
+      <div class="menu-link private-link" onclick="this.closest('.menu-overlay').remove(); window.location.href='private.html'">
+        PRIVATE AREA
+          </div>
   </div>
+</div>
 </div>
 
 
