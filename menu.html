@@ -43,6 +43,8 @@ html, body {
   animation: slideIn 0.4s ease;
   display: flex;
   flex-direction: column;
+  overflow-y: auto;             /* FIX MOBILE: permette scroll */
+  -webkit-overflow-scrolling: touch;
   pointer-events: auto;
 }
 
@@ -74,29 +76,17 @@ html, body {
 ===================== */
 .private-link {
   margin-top: 32px;
-  font-size: 14px;                 /* FORZATO: leggibile su desktop */
+  font-size: 14px;
   letter-spacing: 0.32em;
-  color: #ffffff;                  /* FORZATO: bianco pieno */
-  opacity: 1;                      /* nessuna trasparenza */
+  color: #ffffff;
+  opacity: 1;
   text-align: right;
   justify-content: flex-end;
-  border-top: 1px solid rgba(255,255,255,0.25); /* separatore visivo */
+  border-top: 1px solid rgba(255,255,255,0.25);
   padding-top: 16px;
 }
 
-.private-link:hover {
-  opacity: 1;
-  transform: none;                 /* niente animazioni strane */
-}
-
-.private-link:hover {
-  color: rgba(255,255,255,0.75);
-}
-
-.private-link:hover {
-  color: rgba(255,255,255,0.6);
-  transform: translateX(4px);
-}
+/* nessun hover mobile-breaking */
 
 /* =====================
    CLOSE
@@ -143,7 +133,7 @@ html, body {
 
             </div>
 
-    <div class="menu-bottom" style="margin-top:auto; padding-bottom:16px;">
+    <div class="menu-bottom" style="margin-top:auto; padding-bottom:calc(24px + env(safe-area-inset-bottom));">
       <div class="menu-link private-link" onclick="this.closest('.menu-overlay').remove(); window.location.href='private.html'">
         PRIVATE AREA
           </div>
