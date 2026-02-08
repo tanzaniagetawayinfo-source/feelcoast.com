@@ -456,6 +456,14 @@ video.addEventListener('ended', () => {
     }, { passive: true });
   }
 })();
+// =====================
+// VISIT TRACKING (unique per day via Cloudflare Worker)
+// =====================
+fetch('https://cool-haze-b97a.tanzaniagetaway-info.workers.dev/visit', {
+  method: 'POST',
+  keepalive: true
+}).catch(()=>{});
+
 </script>
 
 </body>
