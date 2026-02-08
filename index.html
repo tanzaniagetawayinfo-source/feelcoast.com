@@ -263,8 +263,7 @@ html, body {
     id="video"
     muted
     playsinline
-    preload="metadata"
-    poster="8456361-hd_1080_1920_30fps.mp4#t=0.1"
+    preload="auto"
   >
     <source src="8456361-hd_1080_1920_30fps.mp4" type="video/mp4">
   </video>
@@ -392,9 +391,11 @@ setTimeout(() => {
 // =====================
 // VIDEO READY
 // =====================
-video.addEventListener('loadeddata', () => {
+// Video fully buffered and ready to play smoothly
+video.addEventListener('canplaythrough', () => {
   videoReady = true;
   hideLoader();
+});
 });
 
 video.play().catch(()=>{});
