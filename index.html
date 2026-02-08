@@ -186,10 +186,23 @@ html, body {
 }
 
 .loader-text {
+  max-width: 86vw;
+  padding: 0 24px;
+  text-align: center;
+  color: rgba(255,255,255,0.9);
+  line-height: 1.4;
+}
+
+.loader-quote {
   font-size: 18px;
-  letter-spacing: 0.45em;
-  color: rgba(255,255,255,0.8);
-  animation: loaderPulse 1.6s ease-in-out infinite;
+  letter-spacing: 0.02em;
+}
+
+.loader-author {
+  margin-top: 12px;
+  font-size: 13px;
+  letter-spacing: 0.25em;
+  opacity: 0.7;
 }
 
 @keyframes loaderPulse {
@@ -254,7 +267,10 @@ html, body {
 
 <!-- LOADER -->
 <div class="loader" id="loader">
-  <div class="loader-text">LOADING</div>
+  <div class="loader-text">
+  <div class="loader-quote">Loading</div>
+  <div class="loader-author"></div>
+</div>
 </div>
 
 <!-- VIDEO -->
@@ -357,18 +373,20 @@ const quotes = [
   { text: "Where words fail, rhythm speaks.", author: "Afro-Caribbean saying" }
 ];
 
-const loaderTextEl = document.querySelector('.loader-text');
+const loaderQuoteEl = document.querySelector('.loader-quote');
+const loaderAuthorEl = document.querySelector('.loader-author');
 let quoteIndex = 0;
 
 function rotateQuotes() {
-  if (!loaderTextEl) return;
+  if (!loaderQuoteEl || !loaderAuthorEl) return;
   const q = quotes[quoteIndex % quotes.length];
-  loaderTextEl.textContent = `"${q.text}" — ${q.author}`;
+  loaderQuoteEl.textContent = `"${q.text}"`;
+  loaderAuthorEl.textContent = q.author;
   quoteIndex++;
 }
 
 rotateQuotes();
-setInterval(rotateQuotes, 2800);
+setInterval(rotateQuotes, 3200);
 
 // =====================
 // LOADER CONTROL (REAL FIX)
