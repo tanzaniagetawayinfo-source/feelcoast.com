@@ -347,15 +347,6 @@ let loaderHidden = false;
 let videoReady = false;
 let sponsorsReady = false;
 
-// Safety fallback: never stay stuck in loading
-setTimeout(() => {
-  if (!loaderHidden) {
-    videoReady = true;
-    sponsorsReady = true;
-    hideLoader();
-  }
-}, 8000);
-
 // =====================
 // EQUATORIAL QUOTES ROTATION
 // =====================
@@ -380,24 +371,26 @@ function rotateQuotes() {
 rotateQuotes();
 setInterval(rotateQuotes, 2800);
 
+// =====================
+// LOADER CONTROL (REAL FIX)
+// =====================
 function hideLoader() {
   if (loaderHidden) return;
   if (!videoReady || !sponsorsReady) return;
 
   loaderHidden = true;
   loader.classList.add('hidden');
-  // Safety fallback (only if something fails)
+}
+
+// Safety fallback: never stay stuck
 setTimeout(() => {
-  if (!loaderHidden) {
-    videoReady = true;
-    sponsorsReady = true;
-    hideLoader();
-  }
+  videoReady = true;
+  sponsorsReady = true;
+  hideLoader();
 }, 8000);
 
-// Mostra logo dopo 10s, altrimenti testo
 // =====================
-// VIDEO READY (first frame loaded)
+// VIDEO READY
 // =====================
 video.addEventListener('loadeddata', () => {
   videoReady = true;
@@ -414,7 +407,6 @@ video.addEventListener('timeupdate', () => {
   }
 });
 
-// Loop manuale pulito
 video.addEventListener('ended', () => {
   center.classList.remove('show-logo');
   video.currentTime = 0;
@@ -423,16 +415,16 @@ video.addEventListener('ended', () => {
 
 /* =====================
    SPONSORS INIT (manual infinite wrap)
-   - usa solo sponsor*.png esistenti
-   - ripete a ruota se pochi
-   - wrap manuale senza auto-scroll
 ===================== */
 (function initSponsors() {
   const host = document.getElementById('sponsors');
-  const track = document.getElementById('sponsorsTrack');
   const A = document.getElementById('sponsorsA');
   const B = document.getElementById('sponsorsB');
-  if (!host || !track || !A || !B) return;
+  if (!host || !A || !B) {
+    sponsorsReady = true;
+    hideLoader();
+    return;
+  }
 
   const candidates = Array.from({ length: 10 }, (_, i) => `sponsor${i + 1}.png`);
   const loaded = [];
@@ -452,7 +444,12 @@ video.addEventListener('ended', () => {
   }
 
   function build() {
-    if (!loaded.length) return;
+    if (!loaded.length) {
+      sponsorsReady = true;
+      hideLoader();
+      return;
+    }
+
     host.style.display = 'block';
 
     const min = 12;
@@ -465,7 +462,7 @@ video.addEventListener('ended', () => {
     }
 
     A.innerHTML = list.map((s,i)=>
-      `<div class=\"sponsor\"><img src=\"${s}\" alt=\"Sponsor ${i+1}\" loading=\"lazy\"></div>`
+      `<div class="sponsor"><img src="${s}" alt="Sponsor ${i+1}" loading="lazy"></div>`
     ).join('');
 
     B.innerHTML = A.innerHTML;
