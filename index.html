@@ -344,6 +344,17 @@ menuBtn.addEventListener('click', async () => {
 });
 
 let loaderHidden = false;
+let videoReady = false;
+let sponsorsReady = false;
+
+// Safety fallback: never stay stuck in loading
+setTimeout(() => {
+  if (!loaderHidden) {
+    videoReady = true;
+    sponsorsReady = true;
+    hideLoader();
+  }
+}, 8000);
 
 // =====================
 // EQUATORIAL QUOTES ROTATION
@@ -385,6 +396,16 @@ setTimeout(() => {
 }, 8000);
 
 // Mostra logo dopo 10s, altrimenti testo
+// =====================
+// VIDEO READY (first frame loaded)
+// =====================
+video.addEventListener('loadeddata', () => {
+  videoReady = true;
+  hideLoader();
+});
+
+video.play().catch(()=>{});
+
 video.addEventListener('timeupdate', () => {
   if (video.currentTime >= LOGO_TIME) {
     center.classList.add('show-logo');
