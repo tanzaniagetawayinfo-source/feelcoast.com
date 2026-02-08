@@ -345,33 +345,44 @@ menuBtn.addEventListener('click', async () => {
 
 let loaderHidden = false;
 
-function hideLoader() {
-  if (loaderHidden) return;
-  loaderHidden = true;
-  loader.classList.add('hidden');
-  setTimeout(() => {
-    loader.style.display = 'none';
-  }, 800);
+// =====================
+// EQUATORIAL QUOTES ROTATION
+// =====================
+const quotes = [
+  { text: "One good thing about music, when it hits you, you feel no pain.", author: "Bob Marley" },
+  { text: "Music is the weapon of the future.", author: "Fela Kuti" },
+  { text: "Without music, life would be a mistake.", author: "Miriam Makeba" },
+  { text: "Dance is the hidden language of the soul.", author: "Caribbean proverb" },
+  { text: "Where words fail, rhythm speaks.", author: "Afro-Caribbean saying" }
+];
+
+const loaderTextEl = document.querySelector('.loader-text');
+let quoteIndex = 0;
+
+function rotateQuotes() {
+  if (!loaderTextEl) return;
+  const q = quotes[quoteIndex % quotes.length];
+  loaderTextEl.textContent = `"${q.text}" — ${q.author}`;
+  quoteIndex++;
 }
 
-// Avvio video (mobile-safe)
-video.play().catch(() => {});
+rotateQuotes();
+setInterval(rotateQuotes, 2800);
 
-/*
-  NASCONDI IL LOADER SOLO QUANDO:
-  - il video ha caricato i dati (loadeddata)
-  - ALMENO un frame è stato effettivamente disegnato
-*/
-video.addEventListener('loadeddata', () => {
-  requestAnimationFrame(() => {
-    requestAnimationFrame(hideLoader);
-  });
-});
+function hideLoader() {
+  if (loaderHidden) return;
+  if (!videoReady || !sponsorsReady) return;
 
-// Sicurezza estrema: se il video è bloccato, mai infinito (4s)
+  loaderHidden = true;
+  loader.classList.add('hidden');
+  // Safety fallback (only if something fails)
 setTimeout(() => {
-  if (!loaderHidden) hideLoader();
-}, 4000);
+  if (!loaderHidden) {
+    videoReady = true;
+    sponsorsReady = true;
+    hideLoader();
+  }
+}, 8000);
 
 // Mostra logo dopo 10s, altrimenti testo
 video.addEventListener('timeupdate', () => {
@@ -441,6 +452,8 @@ video.addEventListener('ended', () => {
     requestAnimationFrame(() => {
       loopWidth = A.getBoundingClientRect().width;
       host.scrollLeft = loopWidth;
+      sponsorsReady = true;
+      hideLoader();
     });
 
     let ticking = false;
