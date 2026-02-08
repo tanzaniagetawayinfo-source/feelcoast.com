@@ -457,12 +457,33 @@ video.addEventListener('ended', () => {
   }
 })();
 // =====================
-// VISIT TRACKING (unique per day via Cloudflare Worker)
+// VISIT TRACKING (unique per day, NO refresh spam)
+// IMPORTANT: we cannot rely on cookies set by the worker (different domain).
+// We persist a stable visitor id in localStorage and send it to /visit.
 // =====================
-fetch('https://cool-haze-b97a.tanzaniagetaway-info.workers.dev/visit', {
-  method: 'POST',
-  keepalive: true
-}).catch(()=>{});
+(function trackVisit() {
+  try {
+    const KEY = 'fc_vid';
+    let vid = localStorage.getItem(KEY);
+    if (!vid || vid.length < 12) {
+      vid = (crypto && crypto.randomUUID) ? crypto.randomUUID() : String(Date.now()) + '_' + Math.random().toString(16).slice(2);
+      localStorage.setItem(KEY, vid);
+    }
+
+    fetch('https://cool-haze-b97a.tanzaniagetaway-info.workers.dev/visit', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ vid }),
+      keepalive: true
+    }).catch(()=>{});
+  } catch (_) {
+    // if localStorage is blocked, fall back to best-effort (may overcount)
+    fetch('https://cool-haze-b97a.tanzaniagetaway-info.workers.dev/visit', {
+      method: 'POST',
+      keepalive: true
+    }).catch(()=>{});
+  }
+})();
 
 </script>
 
