@@ -269,7 +269,7 @@ html, body {
 }
 
 /* Move swipe together with section 1 when About opens */
-.about-overlay.active ~ .swipe-hint {
+.about-open .swipe-hint {
   transform: translate(-50%, -200vh);
 }
 
@@ -508,12 +508,14 @@ function openAbout(){
   if (aboutOpen) return;
   aboutOpen = true;
   about.classList.add('active');
+  document.body.classList.add('about-open');
 }
 
 function closeAbout(){
   if (!aboutOpen) return;
   aboutOpen = false;
   about.classList.remove('active');
+  document.body.classList.remove('about-open');
 }
 
 window.addEventListener('wheel', (e)=>{
