@@ -61,7 +61,7 @@ html, body {
   font-size: 15px;
   opacity: 0.85;
 }
-}
+
 
 /* =====================
    VIDEO BACKGROUND
@@ -157,7 +157,8 @@ html, body {
 
 /* Move center together with About page */
 .about-overlay.active ~ .center {
-  transform: translate(-50%, -150%);
+  /* Move the entire hero completely out of the viewport like a real section */
+  transform: translate(-50%, -200vh);
 }
 
 /* =====================
@@ -508,7 +509,7 @@ window.addEventListener('touchend', e=>{
 
   if (dy < 0 && !aboutOpen) openAbout();
   if (dy > 0 && aboutOpen) closeAbout();
-},{passive:true});(() => {});
+},{passive:true});
 
 video.addEventListener('timeupdate', () => {
   if (video.currentTime >= LOGO_TIME) center.classList.add('show-logo');
