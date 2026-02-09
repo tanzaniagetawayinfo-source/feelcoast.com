@@ -453,11 +453,21 @@ video.addEventListener('ended', () => {
 
     // After DOM paints, compute width and mark ready
     requestAnimationFrame(() => {
-      loopWidth = A.getBoundingClientRect().width;
-      host.scrollLeft = loopWidth; // start in middle so wrap works both ways
+      // Use scrollWidth (real content width), not boundingClientRect (can be affected by transforms)
+      loopWidth = A.scrollWidth;
+      // Start in the middle copy so you can scroll infinitely both ways
+      host.scrollLeft = loopWidth;
       sponsorsReady = true;
       hideLoader();
     });
+
+    // Keep scrollLeft centered in the middle copy (true bidirectional infinite)
+    function normalizeScroll() {
+      if (!loopWidth) return;
+      // If user goes too far left/right, snap back by one loopWidth (seamless)
+      if (host.scrollLeft < loopWidth * 0.5) host.scrollLeft += loopWidth;
+      else if (host.scrollLeft > loopWidth * 1.5) host.scrollLeft -= loopWidth;
+    }
 
     // Manual infinite wrap (both directions)
     let ticking = false;
@@ -466,13 +476,11 @@ video.addEventListener('ended', () => {
       ticking = true;
       requestAnimationFrame(() => {
         ticking = false;
-        if (!loopWidth) return;
-        if (host.scrollLeft >= loopWidth * 2) host.scrollLeft -= loopWidth;
-        if (host.scrollLeft <= 0) host.scrollLeft += loopWidth;
+        normalizeScroll();
       });
     }, { passive: true });
 
-    // Auto drift: continuous left ↔ right, but still infinite wrap
+    // Auto drift: continuous left ↔ right + uses the same normalizer (so it stays infinite both ways)
     const autoSpeed = 0.25; // px per frame
     let direction = 1; // 1 right, -1 left
     let lastUserScroll = Date.now();
@@ -485,17 +493,18 @@ video.addEventListener('ended', () => {
       if (loopWidth) {
         if (Date.now() - lastUserScroll > 3000) {
           host.scrollLeft += autoSpeed * direction;
+          // keep us centered in the middle copy
+          normalizeScroll();
 
-          // wrap (true infinite)
-          if (host.scrollLeft >= loopWidth * 2) host.scrollLeft -= loopWidth;
-          if (host.scrollLeft <= 0) host.scrollLeft += loopWidth;
-
-          // reverse inside the window (not at hard edges)
-          if (host.scrollLeft > loopWidth * 1.75) direction = -1;
-          if (host.scrollLeft < loopWidth * 0.25) direction = 1;
+          // reverse smoothly (doesn't depend on hard edges)
+          if (host.scrollLeft > loopWidth * 1.35) direction = -1;
+          else if (host.scrollLeft < loopWidth * 0.65) direction = 1;
         }
       }
       requestAnimationFrame(autoScroll);
+    }
+
+    requestAnimationFrame(autoScroll);
     }
 
     requestAnimationFrame(autoScroll);
