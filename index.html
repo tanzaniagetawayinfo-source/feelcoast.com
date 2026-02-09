@@ -71,7 +71,7 @@ html, body {
 }
 
 /* =====================
-   CENTER (ASSOLUTO)
+   CENTER
 ===================== */
 .center {
   position: fixed;
@@ -82,9 +82,6 @@ html, body {
   text-align: center;
 }
 
-/* =====================
-   COMING SOON (TESTO)
-===================== */
 .placeholder {
   font-size: 22px;
   letter-spacing: 0.45em;
@@ -93,9 +90,6 @@ html, body {
   transition: opacity 0.6s ease;
 }
 
-/* =====================
-   LOGO
-===================== */
 .logo {
   width: 70vw;
   max-width: 320px;
@@ -108,20 +102,9 @@ html, body {
   transition: opacity 0.8s ease;
 }
 
-/* =====================
-   STATES
-===================== */
-.show-logo .placeholder {
-  opacity: 0;
-}
+.show-logo .placeholder { opacity: 0; }
+.show-logo .logo { opacity: 1; }
 
-.show-logo .logo {
-  opacity: 1;
-}
-
-/* =====================
-   ANIMATIONS
-===================== */
 @keyframes grainMove {
   0% { transform: translate(0,0); }
   50% { transform: translate(-1%, 1%); }
@@ -129,7 +112,7 @@ html, body {
 }
 
 /* =====================
-   SMALL TOP-LEFT LOGO
+   TOP LEFT LOGO
 ===================== */
 .corner-logo {
   position: fixed;
@@ -148,7 +131,7 @@ html, body {
 }
 
 /* =====================
-   TOP-RIGHT MENU ICON
+   TOP RIGHT MENU ICON
 ===================== */
 .corner-menu {
   position: fixed;
@@ -397,7 +380,7 @@ setTimeout(() => {
 video.addEventListener('canplaythrough', () => {
   videoReady = true;
   hideLoader();
-});
+}, { once: true });
 
 video.play().catch(() => {});
 
@@ -422,6 +405,7 @@ video.addEventListener('ended', () => {
   const host = document.getElementById('sponsors');
   const A = document.getElementById('sponsorsA');
   const B = document.getElementById('sponsorsB');
+
   if (!host || !A || !B) {
     sponsorsReady = true;
     hideLoader();
@@ -433,7 +417,7 @@ video.addEventListener('ended', () => {
   let checked = 0;
   let loopWidth = 0;
 
-  candidates.forEach(src => {
+  candidates.forEach((src) => {
     const img = new Image();
     img.onload = () => { loaded.push(src); done(); };
     img.onerror = () => done();
@@ -464,16 +448,16 @@ video.addEventListener('ended', () => {
       }
     }
 
-    A.innerHTML = list.map((s, i) =>
+    A.innerHTML = list.map((s, i) => (
       `<div class="sponsor"><img src="${s}" alt="Sponsor ${i + 1}" loading="lazy"></div>`
-    ).join('');
+    )).join('');
 
     B.innerHTML = A.innerHTML;
 
+    // After DOM paints, compute width and mark ready
     requestAnimationFrame(() => {
       loopWidth = A.getBoundingClientRect().width;
-      // start in the middle so both left/right wrap works
-      host.scrollLeft = loopWidth;
+      host.scrollLeft = loopWidth; // start in middle for bi-directional wrap
       sponsorsReady = true;
       hideLoader();
     });
@@ -491,8 +475,9 @@ video.addEventListener('ended', () => {
       });
     }, { passive: true });
 
-    // Auto drift: slow continuous rightward movement, paused after user interaction
+    // Auto drift: slow continuous LEFT ↔ RIGHT movement, paused after user interaction
     const autoSpeed = 0.25; // px per frame
+    let direction = 1; // 1 = right, -1 = left
     let lastUserScroll = Date.now();
 
     host.addEventListener('touchstart', () => { lastUserScroll = Date.now(); }, { passive: true });
@@ -500,17 +485,19 @@ video.addEventListener('ended', () => {
     host.addEventListener('pointerdown', () => { lastUserScroll = Date.now(); }, { passive: true });
 
     function autoScroll() {
-      if (!loopWidth) {
-        requestAnimationFrame(autoScroll);
-        return;
-      }
+      if (loopWidth) {
+        if (Date.now() - lastUserScroll > 3000) {
+          host.scrollLeft += autoSpeed * direction;
 
-      if (Date.now() - lastUserScroll > 3000) {
-        host.scrollLeft += autoSpeed;
-        if (host.scrollLeft >= loopWidth * 2) host.scrollLeft -= loopWidth;
-        if (host.scrollLeft <= 0) host.scrollLeft += loopWidth;
-      }
+          // reverse near edges (within the infinite window)
+          if (host.scrollLeft >= loopWidth * 1.8) direction = -1;
+          if (host.scrollLeft <= loopWidth * 0.2) direction = 1;
 
+          // safety wrap (true infinite)
+          if (host.scrollLeft >= loopWidth * 2) host.scrollLeft -= loopWidth;
+          if (host.scrollLeft <= 0) host.scrollLeft += loopWidth;
+        }
+      }
       requestAnimationFrame(autoScroll);
     }
 
