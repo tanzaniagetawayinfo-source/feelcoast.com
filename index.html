@@ -250,6 +250,35 @@ html, body {
 }
 
 /* =====================
+   SWIPE HINT (above sponsors)
+===================== */
+.swipe-hint {
+  position: fixed;
+  left: 50%;
+  bottom: 72px;
+  transform: translateX(-50%);
+  z-index: 20;
+  opacity: 0.75;
+  transition: opacity 0.6s ease, transform 0.8s ease;
+  pointer-events: none;
+}
+
+.swipe-hint img {
+  width: 42px;
+  height: auto;
+}
+
+/* Move swipe together with section 1 when About opens */
+.about-overlay.active ~ .swipe-hint {
+  transform: translate(-50%, -200vh);
+}
+
+/* Hide swipe during loading */
+.loader:not(.hidden) ~ .swipe-hint {
+  opacity: 0;
+}
+
+/* =====================
    SPONSORS STRIP (BOTTOM)
 ===================== */
 .sponsors {
@@ -324,6 +353,11 @@ html, body {
 <!-- TOP RIGHT MENU ICON -->
 <div class="corner-menu" aria-label="Menu" role="button" tabindex="0">
   <img src="menu.png" alt="Menu" loading="eager" decoding="async" />
+</div>
+
+<!-- SWIPE HINT -->
+<div class="swipe-hint" id="swipeHint" style="display:none;">
+  <img src="swipe.png" alt="Swipe" loading="lazy" decoding="async" />
 </div>
 
 <!-- SPONSORS STRIP -->
@@ -527,6 +561,7 @@ video.addEventListener('ended', () => {
 ===================== */
 (function initSponsors() {
   const host = document.getElementById('sponsors');
+  const swipe = document.getElementById('swipeHint');
   const A = document.getElementById('sponsorsA');
   const B = document.getElementById('sponsorsB');
 
@@ -572,6 +607,7 @@ video.addEventListener('ended', () => {
     }
 
     host.style.display = 'block';
+    if (swipe) swipe.style.display = 'block';
 
     const min = 12;
     const list = [];
