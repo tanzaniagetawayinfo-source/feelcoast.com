@@ -22,6 +22,48 @@ html, body {
 }
 
 /* =====================
+   ABOUT TRANSITION (fake scroll page)
+===================== */
+.about-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 80px 28px 120px;
+  backdrop-filter: blur(0px);
+  background: rgba(0,0,0,0);
+  transform: translateY(100%);
+  transition: transform 0.8s ease, backdrop-filter 0.8s ease, background 0.8s ease;
+}
+
+.about-overlay.active {
+  transform: translateY(0);
+  backdrop-filter: blur(12px);
+  background: rgba(0,0,0,0.35);
+}
+
+.about-content {
+  max-width: 520px;
+  color: rgba(255,255,255,0.92);
+  line-height: 1.6;
+}
+
+.about-title {
+  font-size: 18px;
+  letter-spacing: 0.35em;
+  margin-bottom: 18px;
+}
+
+.about-text {
+  font-size: 15px;
+  opacity: 0.85;
+}
+}
+
+/* =====================
    VIDEO BACKGROUND
 ===================== */
 .video-bg {
@@ -277,6 +319,24 @@ html, body {
 <div class="vignette"></div>
 <div class="grain"></div>
 
+<!-- ABOUT OVERLAY (fake second page) -->
+<div class="about-overlay" id="aboutOverlay">
+  <div class="about-content">
+    <div class="about-title">ABOUT</div>
+    <div class="about-text">
+      Feel Coast creates curated sunset and night experiences across Zanzibar.
+      
+      Afrobeat, Amapiano, Reggae and Caribbean rhythms meet ocean views, warm air and a community that moves together.
+      
+      We partner with unique locations and brands to build intimate, high‑energy events where music, atmosphere and people connect.
+      
+      This is not just nightlife.
+      
+      It’s a rhythm. A place. A feeling.
+    </div>
+  </div>
+</div>
+
 <!-- CENTER CONTENT -->
 <div class="center" id="center">
   <div class="placeholder" id="placeholder">COMING&nbsp;SOON</div>
@@ -383,6 +443,54 @@ video.addEventListener('canplaythrough', () => {
 }, { once: true });
 
 video.play().catch(() => {});
+
+// =====================
+// FAKE PAGE SCROLL (About)
+// =====================
+const about = document.getElementById('aboutOverlay');
+let aboutOpen = false;
+let scrollLock = false;
+
+function openAbout(){
+  if (aboutOpen) return;
+  aboutOpen = true;
+  about.classList.add('active');
+}
+
+function closeAbout(){
+  if (!aboutOpen) return;
+  aboutOpen = false;
+  about.classList.remove('active');
+}
+
+window.addEventListener('wheel', (e)=>{
+  if (scrollLock) return;
+
+  if (e.deltaY > 40 && !aboutOpen){
+    scrollLock = true;
+    openAbout();
+    setTimeout(()=>scrollLock=false,800);
+  }
+  else if (e.deltaY < -40 && aboutOpen){
+    scrollLock = true;
+    closeAbout();
+    setTimeout(()=>scrollLock=false,800);
+  }
+},{passive:true});
+
+// Mobile swipe
+let startY = 0;
+window.addEventListener('touchstart', e=>{
+  startY = e.touches[0].clientY;
+},{passive:true});
+
+window.addEventListener('touchend', e=>{
+  const dy = e.changedTouches[0].clientY - startY;
+  if (Math.abs(dy) < 50) return;
+
+  if (dy < 0 && !aboutOpen) openAbout();
+  if (dy > 0 && aboutOpen) closeAbout();
+},{passive:true});(() => {});
 
 video.addEventListener('timeupdate', () => {
   if (video.currentTime >= LOGO_TIME) center.classList.add('show-logo');
