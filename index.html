@@ -444,6 +444,10 @@ let loaderHidden = false;
 let videoReady = false;
 let sponsorsReady = false;
 
+// Minimum time the first quote must stay visible (ms)
+const LOADER_MIN_TIME = 2800;
+const loaderStartTime = Date.now();
+
 // =====================
 // EQUATORIAL QUOTES ROTATION
 // =====================
@@ -457,7 +461,9 @@ const quotes = [
 
 const loaderQuoteEl = document.querySelector('.loader-quote');
 const loaderAuthorEl = document.querySelector('.loader-author');
-let quoteIndex = 0;
+
+// Start from a random quote every time
+let quoteIndex = Math.floor(Math.random() * quotes.length);
 
 function rotateQuotes() {
   if (!loaderQuoteEl || !loaderAuthorEl) return;
@@ -476,6 +482,14 @@ setInterval(rotateQuotes, 3200);
 function hideLoader() {
   if (loaderHidden) return;
   if (!videoReady || !sponsorsReady) return;
+
+  // Ensure first quote stays visible for minimum time
+  const elapsed = Date.now() - loaderStartTime;
+  if (elapsed < LOADER_MIN_TIME) {
+    setTimeout(hideLoader, LOADER_MIN_TIME - elapsed);
+    return;
+  }
+
   loaderHidden = true;
   loader.classList.add('hidden');
 }
