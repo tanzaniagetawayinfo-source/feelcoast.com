@@ -385,11 +385,8 @@ video.addEventListener('canplaythrough', () => {
 video.play().catch(() => {});
 
 video.addEventListener('timeupdate', () => {
-  if (video.currentTime >= LOGO_TIME) {
-    center.classList.add('show-logo');
-  } else {
-    center.classList.remove('show-logo');
-  }
+  if (video.currentTime >= LOGO_TIME) center.classList.add('show-logo');
+  else center.classList.remove('show-logo');
 });
 
 video.addEventListener('ended', () => {
@@ -457,7 +454,7 @@ video.addEventListener('ended', () => {
     // After DOM paints, compute width and mark ready
     requestAnimationFrame(() => {
       loopWidth = A.getBoundingClientRect().width;
-      host.scrollLeft = loopWidth; // start in middle for bi-directional wrap
+      host.scrollLeft = loopWidth; // start in middle so wrap works both ways
       sponsorsReady = true;
       hideLoader();
     });
@@ -475,9 +472,9 @@ video.addEventListener('ended', () => {
       });
     }, { passive: true });
 
-    // Auto drift: slow continuous LEFT ↔ RIGHT movement, paused after user interaction
+    // Auto drift: continuous left ↔ right, but still infinite wrap
     const autoSpeed = 0.25; // px per frame
-    let direction = 1; // 1 = right, -1 = left
+    let direction = 1; // 1 right, -1 left
     let lastUserScroll = Date.now();
 
     host.addEventListener('touchstart', () => { lastUserScroll = Date.now(); }, { passive: true });
@@ -489,13 +486,13 @@ video.addEventListener('ended', () => {
         if (Date.now() - lastUserScroll > 3000) {
           host.scrollLeft += autoSpeed * direction;
 
-          // reverse near edges (within the infinite window)
-          if (host.scrollLeft >= loopWidth * 1.8) direction = -1;
-          if (host.scrollLeft <= loopWidth * 0.2) direction = 1;
-
-          // safety wrap (true infinite)
+          // wrap (true infinite)
           if (host.scrollLeft >= loopWidth * 2) host.scrollLeft -= loopWidth;
           if (host.scrollLeft <= 0) host.scrollLeft += loopWidth;
+
+          // reverse inside the window (not at hard edges)
+          if (host.scrollLeft > loopWidth * 1.75) direction = -1;
+          if (host.scrollLeft < loopWidth * 0.25) direction = 1;
         }
       }
       requestAnimationFrame(autoScroll);
