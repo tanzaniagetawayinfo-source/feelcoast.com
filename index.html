@@ -129,14 +129,14 @@ html, body {
 }
 
 /* =====================
-   SMALL TOP-LEFT LOGO (FAST)
+   SMALL TOP-LEFT LOGO
 ===================== */
 .corner-logo {
   position: fixed;
   top: 20px;
   left: 20px;
   z-index: 5;
-  width: 96px;           /* LOGO PIÙ GRANDE */
+  width: 96px;
   opacity: 0.85;
   filter: blur(0.05px);
   pointer-events: none;
@@ -155,7 +155,7 @@ html, body {
   top: 22px;
   right: 22px;
   z-index: 5;
-  width: 36px;           /* MENU PIÙ GRANDE */
+  width: 36px;
   opacity: 0.85;
   filter: blur(0.05px);
   cursor: pointer;
@@ -166,6 +166,7 @@ html, body {
   width: 100%;
   height: auto;
 }
+
 /* =====================
    LOADER
 ===================== */
@@ -205,13 +206,8 @@ html, body {
   opacity: 0.7;
 }
 
-@keyframes loaderPulse {
-  0%,100% { opacity: 0.4; }
-  50% { opacity: 1; }
-}
-
 /* =====================
-   SPONSORS STRIP (BOTTOM, MANUAL SCROLL)
+   SPONSORS STRIP (BOTTOM)
 ===================== */
 .sponsors {
   position: fixed;
@@ -226,9 +222,7 @@ html, body {
   scrollbar-width: none;
 }
 
-.sponsors::-webkit-scrollbar {
-  display: none;
-}
+.sponsors::-webkit-scrollbar { display: none; }
 
 .sponsors-track {
   display: flex;
@@ -237,7 +231,6 @@ html, body {
   width: max-content;
 }
 
-/* ogni gruppo deve essere una riga orizzontale */
 .sponsors-group {
   display: flex;
   flex-direction: row;
@@ -247,19 +240,18 @@ html, body {
 }
 
 .sponsor {
-  height: 32px;                 /* area uniforme per tutti */
+  height: 32px;
   display: flex;
-  align-items: center;          /* centra verticalmente */
+  align-items: center;
 }
 
 .sponsor img {
-  height: 100%;                 /* forza la stessa altezza */
+  height: 100%;
   max-height: 32px;
   width: auto;
   opacity: 0.75;
   filter: grayscale(100%);
 }
-    
 </style>
 </head>
 
@@ -268,34 +260,29 @@ html, body {
 <!-- LOADER -->
 <div class="loader" id="loader">
   <div class="loader-text">
-  <div class="loader-quote">Loading</div>
-  <div class="loader-author"></div>
-</div>
+    <div class="loader-quote">Loading</div>
+    <div class="loader-author"></div>
+  </div>
 </div>
 
 <!-- VIDEO -->
 <div class="video-bg">
-  <video
-    id="video"
-    muted
-    playsinline
-    preload="auto"
-  >
+  <video id="video" muted playsinline preload="auto">
     <source src="8456361-hd_1080_1920_30fps.mp4" type="video/mp4">
   </video>
 </div>
 
-<!-- TOP LEFT LOGO (LOW IMPACT) -->
+<!-- TOP LEFT LOGO -->
 <div class="corner-logo">
   <img src="c66f4082-3131-4280-b821-ee43448d156a.png" alt="Feel Coast" loading="eager" decoding="async" />
 </div>
 
 <!-- TOP RIGHT MENU ICON -->
-<div class="corner-menu">
+<div class="corner-menu" aria-label="Menu" role="button" tabindex="0">
   <img src="menu.png" alt="Menu" loading="eager" decoding="async" />
 </div>
 
-<!-- SPONSORS STRIP (MANUAL SCROLL) -->
+<!-- SPONSORS STRIP -->
 <div class="sponsors" id="sponsors" style="display:none;">
   <div class="sponsors-track" id="sponsorsTrack">
     <div class="sponsors-group" id="sponsorsA"></div>
@@ -310,7 +297,6 @@ html, body {
 <!-- CENTER CONTENT -->
 <div class="center" id="center">
   <div class="placeholder" id="placeholder">COMING&nbsp;SOON</div>
-
   <img
     src="c66f4082-3131-4280-b821-ee43448d156a.png"
     alt="Feel Coast"
@@ -324,7 +310,7 @@ html, body {
 const video = document.getElementById('video');
 const center = document.getElementById('center');
 const loader = document.getElementById('loader');
-const LOGO_TIME = 10; // secondi
+const LOGO_TIME = 10; // seconds
 
 // =====================
 // MENU LAZY LOAD
@@ -332,30 +318,30 @@ const LOGO_TIME = 10; // secondi
 const menuBtn = document.querySelector('.corner-menu');
 let menuOpen = false;
 
-menuBtn.addEventListener('click', async () => {
+async function openMenu() {
   if (menuOpen) return;
-
   try {
-    const html = await fetch('menu.html').then(r => r.text());
+    const html = await fetch('menu.html', { cache: 'no-store' }).then(r => r.text());
     document.body.insertAdjacentHTML('beforeend', html);
     menuOpen = true;
 
-    // sblocca i click mentre il menu è aperto
-    document.body.style.pointerEvents = 'auto';
-
     const observer = new MutationObserver(() => {
       if (!document.querySelector('.menu-overlay')) {
-        document.body.style.pointerEvents = '';
         menuOpen = false;
         observer.disconnect();
       }
     });
 
-    observer.observe(document.body, { childList: true });
+    observer.observe(document.body, { childList: true, subtree: true });
   } catch (e) {
     console.error('Menu load failed', e);
     menuOpen = false;
   }
+}
+
+menuBtn.addEventListener('click', openMenu);
+menuBtn.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter' || e.key === ' ') openMenu();
 });
 
 let loaderHidden = false;
@@ -389,12 +375,11 @@ rotateQuotes();
 setInterval(rotateQuotes, 3200);
 
 // =====================
-// LOADER CONTROL (REAL FIX)
+// LOADER CONTROL
 // =====================
 function hideLoader() {
   if (loaderHidden) return;
   if (!videoReady || !sponsorsReady) return;
-
   loaderHidden = true;
   loader.classList.add('hidden');
 }
@@ -404,18 +389,17 @@ setTimeout(() => {
   videoReady = true;
   sponsorsReady = true;
   hideLoader();
-}, 8000);
+}, 12000);
 
 // =====================
 // VIDEO READY
 // =====================
-// Video fully buffered and ready to play smoothly
 video.addEventListener('canplaythrough', () => {
   videoReady = true;
   hideLoader();
 });
 
-video.play().catch(()=>{});
+video.play().catch(() => {});
 
 video.addEventListener('timeupdate', () => {
   if (video.currentTime >= LOGO_TIME) {
@@ -432,7 +416,7 @@ video.addEventListener('ended', () => {
 });
 
 /* =====================
-   SPONSORS INIT (manual infinite wrap)
+   SPONSORS INIT (infinite + auto drift + manual)
 ===================== */
 (function initSponsors() {
   const host = document.getElementById('sponsors');
@@ -470,6 +454,7 @@ video.addEventListener('ended', () => {
 
     host.style.display = 'block';
 
+    // repeat to make the strip long enough
     const min = 12;
     const list = [];
     while (list.length < min) {
@@ -479,19 +464,21 @@ video.addEventListener('ended', () => {
       }
     }
 
-    A.innerHTML = list.map((s,i)=>
-      `<div class="sponsor"><img src="${s}" alt="Sponsor ${i+1}" loading="lazy"></div>`
+    A.innerHTML = list.map((s, i) =>
+      `<div class="sponsor"><img src="${s}" alt="Sponsor ${i + 1}" loading="lazy"></div>`
     ).join('');
 
     B.innerHTML = A.innerHTML;
 
     requestAnimationFrame(() => {
       loopWidth = A.getBoundingClientRect().width;
+      // start in the middle so both left/right wrap works
       host.scrollLeft = loopWidth;
       sponsorsReady = true;
       hideLoader();
     });
 
+    // Manual infinite wrap (both directions)
     let ticking = false;
     host.addEventListener('scroll', () => {
       if (ticking) return;
@@ -503,19 +490,45 @@ video.addEventListener('ended', () => {
         if (host.scrollLeft <= 0) host.scrollLeft += loopWidth;
       });
     }, { passive: true });
+
+    // Auto drift: slow continuous rightward movement, paused after user interaction
+    const autoSpeed = 0.25; // px per frame
+    let lastUserScroll = Date.now();
+
+    host.addEventListener('touchstart', () => { lastUserScroll = Date.now(); }, { passive: true });
+    host.addEventListener('wheel', () => { lastUserScroll = Date.now(); }, { passive: true });
+    host.addEventListener('pointerdown', () => { lastUserScroll = Date.now(); }, { passive: true });
+
+    function autoScroll() {
+      if (!loopWidth) {
+        requestAnimationFrame(autoScroll);
+        return;
+      }
+
+      if (Date.now() - lastUserScroll > 3000) {
+        host.scrollLeft += autoSpeed;
+        if (host.scrollLeft >= loopWidth * 2) host.scrollLeft -= loopWidth;
+        if (host.scrollLeft <= 0) host.scrollLeft += loopWidth;
+      }
+
+      requestAnimationFrame(autoScroll);
+    }
+
+    requestAnimationFrame(autoScroll);
   }
 })();
+
 // =====================
 // VISIT TRACKING (unique per day, NO refresh spam)
-// IMPORTANT: we cannot rely on cookies set by the worker (different domain).
-// We persist a stable visitor id in localStorage and send it to /visit.
 // =====================
 (function trackVisit() {
   try {
     const KEY = 'fc_vid';
     let vid = localStorage.getItem(KEY);
     if (!vid || vid.length < 12) {
-      vid = (crypto && crypto.randomUUID) ? crypto.randomUUID() : String(Date.now()) + '_' + Math.random().toString(16).slice(2);
+      vid = (crypto && crypto.randomUUID)
+        ? crypto.randomUUID()
+        : String(Date.now()) + '_' + Math.random().toString(16).slice(2);
       localStorage.setItem(KEY, vid);
     }
 
@@ -524,16 +537,14 @@ video.addEventListener('ended', () => {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ vid }),
       keepalive: true
-    }).catch(()=>{});
+    }).catch(() => {});
   } catch (_) {
-    // if localStorage is blocked, fall back to best-effort (may overcount)
     fetch('https://cool-haze-b97a.tanzaniagetaway-info.workers.dev/visit', {
       method: 'POST',
       keepalive: true
-    }).catch(()=>{});
+    }).catch(() => {});
   }
 })();
-
 </script>
 
 </body>
