@@ -233,13 +233,15 @@ html, body {
   max-width: 86vw;
   padding: 0 24px;
   text-align: center;
-  color: rgba(255,255,255,0.9);
+  color: rgba(255,255,255,0.92);
   line-height: 1.4;
 }
 
 .loader-quote {
   font-size: 18px;
   letter-spacing: 0.02em;
+  /* festival-level subtle flicker */
+  animation: quoteFlicker 2.6s ease-in-out infinite;
 }
 
 .loader-author {
@@ -247,6 +249,14 @@ html, body {
   font-size: 13px;
   letter-spacing: 0.25em;
   opacity: 0.7;
+}
+
+@keyframes quoteFlicker {
+  0% { opacity: 0.75; }
+  12% { opacity: 0.9; }
+  18% { opacity: 0.65; }
+  26% { opacity: 1; }
+  100% { opacity: 0.8; }
 }
 
 /* =====================
@@ -444,9 +454,12 @@ let loaderHidden = false;
 let videoReady = false;
 let sponsorsReady = false;
 
-// Minimum time the first quote must stay visible (ms)
-const LOADER_MIN_TIME = 2800;
+// Festival loader timing
+const QUOTE_DURATION = 4000; // each quote = 4s
+const FIRST_MIN_TIME = 3000; // first quote can close after 3s (if everything is ready)
 const loaderStartTime = Date.now();
+let currentQuoteStart = Date.now();
+let firstQuote = true;
 
 // =====================
 // EQUATORIAL QUOTES ROTATION
@@ -465,29 +478,37 @@ const loaderAuthorEl = document.querySelector('.loader-author');
 // Start from a random quote every time
 let quoteIndex = Math.floor(Math.random() * quotes.length);
 
-function rotateQuotes() {
+function showQuote() {
   if (!loaderQuoteEl || !loaderAuthorEl) return;
   const q = quotes[quoteIndex % quotes.length];
   loaderQuoteEl.textContent = `"${q.text}"`;
   loaderAuthorEl.textContent = q.author;
   quoteIndex++;
+  currentQuoteStart = Date.now();
 }
 
-rotateQuotes();
-setInterval(rotateQuotes, 3200);
+showQuote();
+setInterval(() => {
+  firstQuote = false;
+  showQuote();
+  tryHideLoader();
+}, QUOTE_DURATION);
 
 // =====================
-// LOADER CONTROL
+// LOADER CONTROL (festival rules)
 // =====================
-function hideLoader() {
+function tryHideLoader() {
   if (loaderHidden) return;
   if (!videoReady || !sponsorsReady) return;
 
-  // Ensure first quote stays visible for minimum time
-  const elapsed = Date.now() - loaderStartTime;
-  if (elapsed < LOADER_MIN_TIME) {
-    setTimeout(hideLoader, LOADER_MIN_TIME - elapsed);
-    return;
+  const now = Date.now();
+
+  // First quote: minimum 3s from loader start (can close after 3s if ready)
+  if (firstQuote) {
+    if ((now - loaderStartTime) < FIRST_MIN_TIME) return;
+  } else {
+    // Other quotes must finish their full 4s window
+    if ((now - currentQuoteStart) < QUOTE_DURATION) return;
   }
 
   loaderHidden = true;
@@ -498,16 +519,32 @@ function hideLoader() {
 setTimeout(() => {
   videoReady = true;
   sponsorsReady = true;
-  hideLoader();
+  tryHideLoader();
 }, 12000);
 
 // =====================
-// VIDEO READY
+// VIDEO READY (avoid first-frame only)
+// - require canplaythrough + playing
 // =====================
+let canPlay = false;
+let isPlaying = false;
+
+function updateVideoReady() {
+  if (!videoReady && canPlay && isPlaying) {
+    videoReady = true;
+    tryHideLoader();
+  }
+}
+
 video.addEventListener('canplaythrough', () => {
-  videoReady = true;
-  hideLoader();
+  canPlay = true;
+  updateVideoReady();
 }, { once: true });
+
+video.addEventListener('playing', () => {
+  isPlaying = true;
+  updateVideoReady();
+});
 
 video.play().catch(() => {});
 
@@ -583,7 +620,7 @@ video.addEventListener('ended', () => {
 
   if (!host || !A || !B) {
     sponsorsReady = true;
-    hideLoader();
+    tryHideLoader();
     return;
   }
 
@@ -596,7 +633,7 @@ video.addEventListener('ended', () => {
   const timeoutSafety = setTimeout(() => {
     if (!sponsorsReady) {
       sponsorsReady = true;
-      hideLoader();
+      tryHideLoader();
     }
   }, 4000);
 
@@ -618,7 +655,7 @@ video.addEventListener('ended', () => {
     // If no sponsors found → continue without strip
     if (!loaded.length) {
       sponsorsReady = true;
-      hideLoader();
+      tryHideLoader();
       return;
     }
 
@@ -644,7 +681,7 @@ video.addEventListener('ended', () => {
       loopWidth = A.scrollWidth;
       host.scrollLeft = loopWidth;
       sponsorsReady = true;
-      hideLoader();
+      tryHideLoader();
     });
 
     function normalizeScroll() {
