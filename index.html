@@ -523,30 +523,48 @@ setTimeout(() => {
 }, 12000);
 
 // =====================
-// VIDEO READY (avoid first-frame only)
-// - require canplaythrough + playing
+// VIDEO READY (robust – prevent infinite loader)
 // =====================
 let canPlay = false;
 let isPlaying = false;
 
 function updateVideoReady() {
-  if (!videoReady && canPlay && isPlaying) {
+  if (!videoReady && (canPlay || isPlaying)) {
     videoReady = true;
     tryHideLoader();
   }
 }
 
+// Video has enough data
 video.addEventListener('canplaythrough', () => {
   canPlay = true;
   updateVideoReady();
 }, { once: true });
 
+// Video actually started
 video.addEventListener('playing', () => {
   isPlaying = true;
   updateVideoReady();
 });
 
-video.play().catch(() => {});
+// Mobile browsers sometimes block autoplay even if muted
+video.muted = true;
+video.playsInline = true;
+
+video.play().catch(() => {
+  // Try again after user interaction or short delay
+  setTimeout(() => {
+    video.play().catch(() => {});
+  }, 1000);
+});
+
+// Hard fallback: if video still not ready after 5s, do not block loader
+setTimeout(() => {
+  if (!videoReady) {
+    videoReady = true;
+    tryHideLoader();
+  }
+}, 5000);
 
 // =====================
 // FAKE PAGE SCROLL (About)
