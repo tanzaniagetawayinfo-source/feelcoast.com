@@ -515,12 +515,16 @@ function tryHideLoader() {
   loader.classList.add('hidden');
 }
 
-// Safety fallback: never stay stuck
+// Safety fallback: never stay stuck (hard fail‑safe)
+// If something blocks video or sponsors, force close loader
 setTimeout(() => {
-  videoReady = true;
-  sponsorsReady = true;
-  tryHideLoader();
-}, 12000);
+  if (!loaderHidden) {
+    loaderHidden = true;
+    loader.classList.add('hidden');
+    videoReady = true;
+    sponsorsReady = true;
+  }
+}, 6000);
 
 // =====================
 // VIDEO READY (robust – prevent infinite loader)
